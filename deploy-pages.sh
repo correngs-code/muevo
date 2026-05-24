@@ -1,7 +1,7 @@
 #!/bin/bash
 # Rebuilda e aggiorna GitHub Pages in un comando
 cd /home/claude/repo
-npm run build
+GITHUB_PAGES=1 npm run build
 rm -rf /tmp/ghp && mkdir /tmp/ghp && cp -r dist/. /tmp/ghp/
 cd /tmp/ghp
 git init -b gh-pages

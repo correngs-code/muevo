@@ -3,5 +3,5 @@ import react from '@vitejs/plugin-react'
 
 export default defineConfig({
   plugins: [react()],
-  base: '/muevo/',
+  base: process.env.GITHUB_PAGES ? '/muevo/' : '/',
 })
