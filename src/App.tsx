@@ -258,7 +258,7 @@ export default function App() {
           <MeseScreen transactions={monthTxs} onDelete={handleDelete} />
         )}
         {screen === 'anno' && (
-          <AnnoScreen transactions={transactions} />
+          <AnnoScreen transactions={transactions} onDelete={handleDelete} />
         )}
       </div>
 
