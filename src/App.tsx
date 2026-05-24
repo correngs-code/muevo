@@ -28,65 +28,12 @@ type AddPayload = { name: string; amount: number; isIncome: boolean; icon: strin
 
 const IS_DEMO = !import.meta.env.VITE_SUPABASE_URL
 
-// Helper to make a date at N months ago
-function daysAgo(d: number) { return new Date(Date.now() - d * 86400000).toISOString() }
-function monthsAgo(m: number, day = 5) {
-  const d = new Date(); d.setMonth(d.getMonth() - m); d.setDate(day)
-  return d.toISOString()
-}
-
-const DEMO_SEED: Transaction[] = [
-  // ── Mese corrente ──
-  { id: 'c1', user_id:'demo', name:'Stipendio',    amount:2400,  kind:'income',  category:'Altro',           icon:'💰', created_at: daysAgo(4) },
-  { id: 'c2', user_id:'demo', name:'Affitto',       amount:780,   kind:'expense', category:'Casa & Bollette', icon:'🏠', created_at: daysAgo(3) },
-  { id: 'c3', user_id:'demo', name:'Spotify',       amount:9.99,  kind:'expense', category:'Abbonamenti',     icon:'🎧', created_at: daysAgo(3) },
-  { id: 'c4', user_id:'demo', name:'Esselunga',     amount:64.3,  kind:'expense', category:'Spesa quotidiana',icon:'🛒', created_at: daysAgo(2) },
-  { id: 'c5', user_id:'demo', name:'Caffè',         amount:1.5,   kind:'expense', category:'Cibo & Delivery', icon:'☕', created_at: daysAgo(1) },
-  { id: 'c6', user_id:'demo', name:'Netflix',       amount:12.99, kind:'expense', category:'Abbonamenti',     icon:'🍿', created_at: daysAgo(1) },
-  { id: 'c7', user_id:'demo', name:'Benzina',       amount:48,    kind:'expense', category:'Trasporti',       icon:'⛽', created_at: daysAgo(1) },
-  { id: 'c8', user_id:'demo', name:'Pizza',         amount:24.5,  kind:'expense', category:'Cibo & Delivery', icon:'🍕', created_at: daysAgo(0) },
-  // ── Mese -1 ──
-  { id: 'b1', user_id:'demo', name:'Stipendio',    amount:2400,  kind:'income',  category:'Altro',           icon:'💰', created_at: monthsAgo(1,1) },
-  { id: 'b2', user_id:'demo', name:'Affitto',       amount:780,   kind:'expense', category:'Casa & Bollette', icon:'🏠', created_at: monthsAgo(1,2) },
-  { id: 'b3', user_id:'demo', name:'Palestra',      amount:39,    kind:'expense', category:'Salute & Fitness',icon:'💪', created_at: monthsAgo(1,5) },
-  { id: 'b4', user_id:'demo', name:'Esselunga',     amount:71.2,  kind:'expense', category:'Spesa quotidiana',icon:'🛒', created_at: monthsAgo(1,8) },
-  { id: 'b5', user_id:'demo', name:'Farmacia',      amount:18.5,  kind:'expense', category:'Salute & Fitness',icon:'💊', created_at: monthsAgo(1,12) },
-  { id: 'b6', user_id:'demo', name:'Netflix',       amount:12.99, kind:'expense', category:'Abbonamenti',     icon:'🍿', created_at: monthsAgo(1,15) },
-  { id: 'b7', user_id:'demo', name:'Benzina',       amount:52,    kind:'expense', category:'Trasporti',       icon:'⛽', created_at: monthsAgo(1,20) },
-  { id: 'b8', user_id:'demo', name:'Sushi',         amount:31,    kind:'expense', category:'Cibo & Delivery', icon:'🍣', created_at: monthsAgo(1,22) },
-  // ── Mese -2 ──
-  { id: 'a1', user_id:'demo', name:'Stipendio',    amount:2400,  kind:'income',  category:'Altro',           icon:'💰', created_at: monthsAgo(2,1) },
-  { id: 'a2', user_id:'demo', name:'Affitto',       amount:780,   kind:'expense', category:'Casa & Bollette', icon:'🏠', created_at: monthsAgo(2,2) },
-  { id: 'a3', user_id:'demo', name:'Treno Milano',  amount:28.5,  kind:'expense', category:'Trasporti',       icon:'🚆', created_at: monthsAgo(2,7) },
-  { id: 'a4', user_id:'demo', name:'Freelance',     amount:650,   kind:'income',  category:'Altro',           icon:'💼', created_at: monthsAgo(2,10) },
-  { id: 'a5', user_id:'demo', name:'Esselunga',     amount:58.9,  kind:'expense', category:'Spesa quotidiana',icon:'🛒', created_at: monthsAgo(2,14) },
-  { id: 'a6', user_id:'demo', name:'Amazon',        amount:44,    kind:'expense', category:'Shopping',        icon:'📦', created_at: monthsAgo(2,18) },
-  { id: 'a7', user_id:'demo', name:'Netflix',       amount:12.99, kind:'expense', category:'Abbonamenti',     icon:'🍿', created_at: monthsAgo(2,20) },
-  { id: 'a8', user_id:'demo', name:'Dentista',      amount:120,   kind:'expense', category:'Salute & Fitness',icon:'🦷', created_at: monthsAgo(2,25) },
-  // ── Mese -3 ──
-  { id: 'z1', user_id:'demo', name:'Stipendio',    amount:2400,  kind:'income',  category:'Altro',           icon:'💰', created_at: monthsAgo(3,1) },
-  { id: 'z2', user_id:'demo', name:'Affitto',       amount:780,   kind:'expense', category:'Casa & Bollette', icon:'🏠', created_at: monthsAgo(3,2) },
-  { id: 'z3', user_id:'demo', name:'Volo Barcellona',amount:189,  kind:'expense', category:'Viaggi',          icon:'✈️', created_at: monthsAgo(3,5) },
-  { id: 'z4', user_id:'demo', name:'Hotel',         amount:210,   kind:'expense', category:'Viaggi',          icon:'🏨', created_at: monthsAgo(3,6) },
-  { id: 'z5', user_id:'demo', name:'Esselunga',     amount:55.4,  kind:'expense', category:'Spesa quotidiana',icon:'🛒', created_at: monthsAgo(3,15) },
-  { id: 'z6', user_id:'demo', name:'Netflix',       amount:12.99, kind:'expense', category:'Abbonamenti',     icon:'🍿', created_at: monthsAgo(3,20) },
-  { id: 'z7', user_id:'demo', name:'Regalo',        amount:300,   kind:'income',  category:'Altro',           icon:'🎁', created_at: monthsAgo(3,22) },
-  // ── Mese -4 ──
-  { id: 'y1', user_id:'demo', name:'Stipendio',    amount:2400,  kind:'income',  category:'Altro',           icon:'💰', created_at: monthsAgo(4,1) },
-  { id: 'y2', user_id:'demo', name:'Affitto',       amount:780,   kind:'expense', category:'Casa & Bollette', icon:'🏠', created_at: monthsAgo(4,2) },
-  { id: 'y3', user_id:'demo', name:'Assicurazione', amount:145,   kind:'expense', category:'Tasse & Assicurazioni',icon:'📄',created_at: monthsAgo(4,3) },
-  { id: 'y4', user_id:'demo', name:'Esselunga',     amount:67,    kind:'expense', category:'Spesa quotidiana',icon:'🛒', created_at: monthsAgo(4,10) },
-  { id: 'y5', user_id:'demo', name:'Palestra',      amount:39,    kind:'expense', category:'Salute & Fitness',icon:'💪', created_at: monthsAgo(4,12) },
-  { id: 'y6', user_id:'demo', name:'Netflix',       amount:12.99, kind:'expense', category:'Abbonamenti',     icon:'🍿', created_at: monthsAgo(4,20) },
-  { id: 'y7', user_id:'demo', name:'Spotify',       amount:9.99,  kind:'expense', category:'Abbonamenti',     icon:'🎧', created_at: monthsAgo(4,20) },
-]
-
 function loadDemo(): Transaction[] {
   try {
     const stored = localStorage.getItem('muevo_demo_txs')
-    return stored ? (JSON.parse(stored) as Transaction[]) : DEMO_SEED
+    return stored ? (JSON.parse(stored) as Transaction[]) : []
   } catch {
-    return DEMO_SEED
+    return []
   }
 }
 
