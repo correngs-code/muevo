@@ -246,9 +246,19 @@ export default function App() {
 
   // ── Render ────────────────────────────────────────────────────────────────
   if (mode === 'loading') return (
-    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh' }}>
+    <div
+      role="status"
+      aria-label="Caricamento Muevo"
+      style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100dvh', background: 'var(--gradient-bg)' }}
+    >
       <style>{`@keyframes spin { to { transform: rotate(360deg) } }`}</style>
-      <div style={{ width: 32, height: 32, border: '2px solid #3b6cff', borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 0.7s linear infinite' }} />
+      <div style={{
+        width: 32, height: 32,
+        border: '2.5px solid color-mix(in oklab, var(--primary) 30%, transparent)',
+        borderTopColor: 'var(--primary)',
+        borderRadius: '50%',
+        animation: 'spin 0.7s linear infinite',
+      }} />
     </div>
   )
 
@@ -263,14 +273,20 @@ export default function App() {
   return (
     <div style={{ position: 'relative', maxWidth: 576, margin: '0 auto', minHeight: '100dvh', background: 'var(--gradient-bg)' }}>
       {mode === 'local' && (
-        <div style={{
-          position: 'fixed', top: 0, left: '50%', transform: 'translateX(-50%)',
-          width: '100%', maxWidth: 576, zIndex: 200,
-          background: 'rgba(59,108,255,0.10)', backdropFilter: 'blur(12px)',
-          borderBottom: '1px solid rgba(59,108,255,0.15)',
-          textAlign: 'center', padding: '6px 16px',
-          fontSize: 11, fontWeight: 500, color: '#3b6cff', letterSpacing: '0.04em',
-        }}>
+        <div
+          role="status"
+          aria-live="polite"
+          style={{
+            position: 'fixed', top: 0, left: '50%', transform: 'translateX(-50%)',
+            width: '100%', maxWidth: 576, zIndex: 200,
+            background: 'rgba(59,108,255,0.10)', backdropFilter: 'blur(12px)',
+            WebkitBackdropFilter: 'blur(12px)',
+            borderBottom: '1px solid rgba(59,108,255,0.15)',
+            textAlign: 'center',
+            padding: 'calc(env(safe-area-inset-top, 0) + 6px) 16px 6px',
+            fontSize: 11, fontWeight: 500, color: '#3b6cff', letterSpacing: '0.04em',
+          }}
+        >
           Senza account · i dati sono salvati su questo dispositivo
           {HAS_ENV && (
             <>
@@ -292,7 +308,10 @@ export default function App() {
         </div>
       )}
 
-      <div style={{ paddingTop: mode === 'local' ? 30 : 0, minHeight: '100dvh' }}>
+      <div style={{
+        paddingTop: mode === 'local' ? 'calc(env(safe-area-inset-top, 0) + 30px)' : 'env(safe-area-inset-top, 0)',
+        minHeight: '100dvh',
+      }}>
         {screen === 'home' && (
           <HomeScreen
             mode={mode}

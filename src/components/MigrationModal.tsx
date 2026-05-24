@@ -1,3 +1,5 @@
+import { useState } from 'react'
+
 interface Props {
   count: number
   onImport: () => void
@@ -6,12 +8,20 @@ interface Props {
 }
 
 export default function MigrationModal({ count, onImport, onDiscard, busy }: Props) {
+  const [confirmDiscard, setConfirmDiscard] = useState(false)
+
+  const handleDiscardClick = () => {
+    if (confirmDiscard) onDiscard()
+    else setConfirmDiscard(true)
+  }
+
   return (
     <>
       <div style={{
         position: 'fixed', inset: 0, zIndex: 400,
-        background: 'oklch(0.15 0.02 265 / 0.55)',
-        backdropFilter: 'blur(6px)',
+        background: 'oklch(0.10 0.02 265 / 0.6)',
+        backdropFilter: 'blur(8px)',
+        WebkitBackdropFilter: 'blur(8px)',
         animation: 'fadeIn 220ms cubic-bezier(0.22,1,0.36,1)',
       }} />
       <div style={{
@@ -80,21 +90,22 @@ export default function MigrationModal({ count, onImport, onDiscard, busy }: Pro
             </button>
             <button
               type="button"
-              onClick={onDiscard}
+              onClick={handleDiscardClick}
               disabled={busy}
               style={{
                 width: '100%', height: 44,
-                background: 'transparent',
-                color: 'var(--muted-foreground)',
-                border: '1px solid var(--border)', borderRadius: 12,
-                fontSize: 14, fontWeight: 600, fontFamily: 'var(--font-sans)',
+                background: confirmDiscard ? 'oklch(0.62 0.22 25 / 0.12)' : 'transparent',
+                color: confirmDiscard ? 'oklch(0.55 0.22 25)' : 'var(--muted-foreground)',
+                border: confirmDiscard ? '1px solid oklch(0.62 0.22 25 / 0.4)' : '1px solid var(--border)',
+                borderRadius: 12,
+                fontSize: 14, fontWeight: confirmDiscard ? 700 : 600, fontFamily: 'var(--font-sans)',
                 cursor: busy ? 'wait' : 'pointer',
-                transition: 'background 150ms, color 150ms',
+                transition: 'background 200ms, color 200ms, border-color 200ms',
               }}
-              onMouseEnter={(e) => { if (!busy) { e.currentTarget.style.background = 'var(--secondary)'; e.currentTarget.style.color = 'var(--foreground)' } }}
-              onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--muted-foreground)' }}
+              onMouseEnter={(e) => { if (!busy && !confirmDiscard) { e.currentTarget.style.background = 'var(--secondary)'; e.currentTarget.style.color = 'var(--foreground)' } }}
+              onMouseLeave={(e) => { if (!confirmDiscard) { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--muted-foreground)' } }}
             >
-              Scarta i dati locali
+              {confirmDiscard ? 'Sicuro? Tocca ancora per scartare' : 'Scarta i dati locali'}
             </button>
           </div>
         </div>

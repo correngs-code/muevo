@@ -108,22 +108,26 @@ export default function HomeScreen({
           <button
             type="button"
             onClick={onSignOut}
+            aria-label={userFullName ? `Account ${userFullName}, esci` : 'Esci'}
             title={userFullName ? `${userFullName} · clicca per uscire` : 'Esci'}
             style={{
               width: 36, height: 36,
-              background: userAvatarUrl ? `center / cover no-repeat url(${userAvatarUrl})` : 'var(--foreground)',
-              color: 'var(--background)',
+              background: userAvatarUrl
+                ? `center / cover no-repeat url(${userAvatarUrl})`
+                : 'linear-gradient(135deg, oklch(0.55 0.18 255), oklch(0.65 0.22 280))',
+              color: '#fff',
               border: userAvatarUrl ? '1px solid var(--border)' : 'none',
               borderRadius: '50%',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               cursor: 'pointer',
               fontSize: 13, fontWeight: 700, letterSpacing: '-0.02em',
               fontFamily: 'var(--font-sans)',
-              transition: 'opacity 150ms',
+              transition: 'box-shadow 200ms, opacity 150ms',
               overflow: 'hidden',
+              boxShadow: '0 0 0 0 oklch(0.58 0.18 255 / 0)',
             }}
-            onMouseEnter={(e) => { e.currentTarget.style.opacity = '0.75' }}
-            onMouseLeave={(e) => { e.currentTarget.style.opacity = '1' }}
+            onMouseEnter={(e) => { e.currentTarget.style.boxShadow = '0 0 0 3px oklch(0.58 0.18 255 / 0.25)' }}
+            onMouseLeave={(e) => { e.currentTarget.style.boxShadow = '0 0 0 0 oklch(0.58 0.18 255 / 0)' }}
           >
             {!userAvatarUrl && userInitials}
           </button>
@@ -187,17 +191,20 @@ export default function HomeScreen({
           ti rimangono
         </div>
 
-        <div style={{
-          fontSize: 'clamp(48px, 12vw, 72px)',
-          fontWeight: 800,
-          color: 'var(--foreground)',
-          letterSpacing: '-0.04em',
-          lineHeight: 1,
-          fontVariantNumeric: 'tabular-nums',
-          fontFeatureSettings: '"tnum", "ss01"',
-          marginBottom: 8,
-          transition: 'color 400ms',
-        }}>
+        <div
+          aria-label={`Saldo rimanente questo mese: ${formatEUR(Math.abs(remaining))}${remaining < 0 ? ' in negativo' : ''}`}
+          style={{
+            fontSize: 'clamp(48px, 12vw, 72px)',
+            fontWeight: 800,
+            color: 'var(--foreground)',
+            letterSpacing: '-0.04em',
+            lineHeight: 1,
+            fontVariantNumeric: 'tabular-nums',
+            fontFeatureSettings: '"tnum", "ss01"',
+            marginBottom: 8,
+            transition: 'color 400ms',
+          }}
+        >
           {formatEUR(Math.abs(remaining))}
         </div>
 
@@ -223,23 +230,32 @@ export default function HomeScreen({
           <div style={{ maxWidth: 320, margin: '0 auto', padding: '0 4px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6, fontSize: 11, color: 'var(--muted-foreground)' }}>
               <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'oklch(0.62 0.22 25)', display: 'inline-block' }} />
-                {Math.round(spentPct)}% spese
+                <span style={{ width: 6, height: 6, borderRadius: '50%', background: overBudget ? 'oklch(0.55 0.22 25)' : 'oklch(0.62 0.22 25)', display: 'inline-block' }} />
+                <span style={{ color: overBudget ? 'oklch(0.55 0.22 25)' : 'inherit', fontWeight: overBudget ? 700 : 500 }}>
+                  {Math.round((totalExpenses / totalIncome) * 100)}% spese{overBudget ? ' · oltre il budget' : ''}
+                </span>
               </span>
               <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                 <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'oklch(0.68 0.18 152)', display: 'inline-block' }} />
                 {formatEUR(totalIncome)} entrate
               </span>
             </div>
-            <div style={{ height: 4, background: 'rgba(255,255,255,0.12)', borderRadius: 9999, overflow: 'hidden' }}>
+            <div style={{
+              height: 4,
+              background: 'rgba(255,255,255,0.12)',
+              borderRadius: 9999,
+              overflow: 'hidden',
+              boxShadow: overBudget ? '0 0 0 1px oklch(0.62 0.22 25 / 0.3), 0 0 12px -2px oklch(0.62 0.22 25 / 0.45)' : 'none',
+              transition: 'box-shadow 400ms',
+            }}>
               <div style={{
                 height: '100%',
                 width: `${spentPct}%`,
                 background: overBudget
-                  ? 'oklch(0.62 0.22 25)'
+                  ? 'linear-gradient(90deg, oklch(0.58 0.22 25), oklch(0.68 0.22 25))'
                   : 'linear-gradient(90deg, oklch(0.62 0.22 260), oklch(0.68 0.18 255))',
                 borderRadius: 9999,
-                transition: 'width 600ms cubic-bezier(0.22,1,0.36,1)',
+                transition: 'width 600ms cubic-bezier(0.22,1,0.36,1), background 400ms',
               }} />
             </div>
           </div>

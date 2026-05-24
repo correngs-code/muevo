@@ -217,7 +217,7 @@ export default function AnnoScreen({ transactions, onDelete }: AnnoScreenProps) 
               ) : (
                 <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 10, fontWeight: 500, color: 'var(--muted-foreground)' }}>
                   <span style={{ fontSize: 12, lineHeight: 1 }}>+</span>
-                  Aggiungi
+                  Tocca per aggiungere
                 </div>
               )}
             </button>
@@ -233,8 +233,9 @@ export default function AnnoScreen({ transactions, onDelete }: AnnoScreenProps) 
             onClick={closeSheet}
             style={{
               position: 'fixed', inset: 0, zIndex: 300,
-              background: 'oklch(0.15 0.02 265 / 0.4)',
-              backdropFilter: 'blur(4px)',
+              background: 'oklch(0.10 0.02 265 / 0.55)',
+              backdropFilter: 'blur(6px)',
+              WebkitBackdropFilter: 'blur(6px)',
               opacity: sheetVisible ? 1 : 0,
               transition: 'opacity 0.3s ease',
             }}
@@ -257,8 +258,8 @@ export default function AnnoScreen({ transactions, onDelete }: AnnoScreenProps) 
             {selected && (
               <>
                 {/* Sheet handle */}
-                <div style={{ display: 'flex', justifyContent: 'center', paddingTop: 12, flexShrink: 0 }}>
-                  <div style={{ width: 36, height: 4, borderRadius: 9999, background: 'var(--border)' }} />
+                <div style={{ display: 'flex', justifyContent: 'center', paddingTop: 10, paddingBottom: 2, flexShrink: 0 }}>
+                  <div style={{ width: 40, height: 5, borderRadius: 9999, background: 'oklch(0.78 0.01 250)' }} />
                 </div>
 
                 {/* Sheet header */}
@@ -308,7 +309,7 @@ export default function AnnoScreen({ transactions, onDelete }: AnnoScreenProps) 
                 </div>
 
                 {/* Sheet scrollable body */}
-                <div style={{ flex: 1, overflowY: 'auto', padding: '0 20px 40px', display: 'flex', flexDirection: 'column', gap: 24 }}>
+                <div style={{ flex: 1, overflowY: 'auto', overscrollBehavior: 'contain', WebkitOverflowScrolling: 'touch', padding: '0 20px calc(env(safe-area-inset-bottom, 0) + 40px)', display: 'flex', flexDirection: 'column', gap: 24 }}>
 
                   {/* Categories */}
                   {pieSlices.length > 0 && (

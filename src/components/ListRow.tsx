@@ -17,13 +17,16 @@ export default function ListRow({ icon, name, meta, amount, kind, onDelete }: Li
   const [swiped, setSwiped] = useState(false)
   const touchStartX = useRef(0)
   const touchStartY = useRef(0)
+  const touchStartTime = useRef(0)
   const isDragging = useRef(false)
 
-  const SWIPE_THRESHOLD = 60
+  const SWIPE_THRESHOLD = 50
+  const FLICK_VELOCITY = 0.45 // px/ms — quick flick triggers delete reveal even if distance < threshold
 
   const handleTouchStart = (e: React.TouchEvent) => {
     touchStartX.current = e.touches[0].clientX
     touchStartY.current = e.touches[0].clientY
+    touchStartTime.current = Date.now()
     isDragging.current = false
   }
 
@@ -34,7 +37,7 @@ export default function ListRow({ icon, name, meta, amount, kind, onDelete }: Li
     isDragging.current = true
     if (dx < 0) {
       e.preventDefault()
-      const offset = Math.max(dx, -SWIPE_THRESHOLD - 20)
+      const offset = Math.max(dx, -SWIPE_THRESHOLD - 16)
       setSwipeOffset(offset)
     } else if (swiped && dx > 0) {
       e.preventDefault()
@@ -44,7 +47,10 @@ export default function ListRow({ icon, name, meta, amount, kind, onDelete }: Li
 
   const handleTouchEnd = () => {
     if (!isDragging.current) return
-    if (swipeOffset < -SWIPE_THRESHOLD / 2) {
+    const elapsed = Math.max(1, Date.now() - touchStartTime.current)
+    const velocity = Math.abs(swipeOffset) / elapsed
+    const fastFlickLeft = swipeOffset < -20 && velocity > FLICK_VELOCITY
+    if (fastFlickLeft || swipeOffset < -SWIPE_THRESHOLD / 2) {
       setSwipeOffset(-SWIPE_THRESHOLD)
       setSwiped(true)
     } else {
@@ -108,18 +114,24 @@ export default function ListRow({ icon, name, meta, amount, kind, onDelete }: Li
 
         {/* Text */}
         <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{
-            fontSize: 14, fontWeight: 600,
-            color: 'var(--foreground)',
-            whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
-          }}>
+          <div
+            title={name}
+            style={{
+              fontSize: 14, fontWeight: 600,
+              color: 'var(--foreground)',
+              whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
+            }}
+          >
             {name}
           </div>
-          <div style={{
-            fontSize: 12, color: 'var(--muted-foreground)',
-            marginTop: 1,
-            whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
-          }}>
+          <div
+            title={meta}
+            style={{
+              fontSize: 12, color: 'var(--muted-foreground)',
+              marginTop: 1,
+              whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
+            }}
+          >
             {meta}
           </div>
         </div>
@@ -141,6 +153,8 @@ export default function ListRow({ icon, name, meta, amount, kind, onDelete }: Li
         {onDelete && (
           <button
             type="button"
+            aria-label={`Elimina ${name}`}
+            title={`Elimina ${name}`}
             onClick={(e) => { e.stopPropagation(); onDelete() }}
             style={{
               position: 'absolute',
@@ -169,6 +183,7 @@ export default function ListRow({ icon, name, meta, amount, kind, onDelete }: Li
       {swiped && onDelete && (
         <button
           type="button"
+          aria-label={`Conferma eliminazione ${name}`}
           onClick={(e) => { e.stopPropagation(); onDelete(); resetSwipe() }}
           style={{
             position: 'absolute', right: 0, top: 0, bottom: 0,

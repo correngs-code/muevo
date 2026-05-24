@@ -97,9 +97,11 @@ export default function Landing({ onSignIn, onContinueLocal }: LandingProps) {
       <nav style={{
         position: 'sticky', top: 0, zIndex: 50,
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        padding: '0 24px', height: 64,
+        padding: 'env(safe-area-inset-top, 0) 24px 0',
+        height: 'calc(64px + env(safe-area-inset-top, 0))',
         background: 'rgba(5,7,13,0.72)',
         backdropFilter: 'blur(20px) saturate(160%)',
+        WebkitBackdropFilter: 'blur(20px) saturate(160%)',
         borderBottom: '1px solid rgba(255,255,255,0.06)',
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
@@ -167,15 +169,15 @@ export default function Landing({ onSignIn, onContinueLocal }: LandingProps) {
                   onClick={onContinueLocal}
                   style={{
                     background: 'transparent', border: 'none',
-                    color: 'rgba(255,255,255,0.55)',
+                    color: 'rgba(255,255,255,0.78)',
                     fontSize: 14, fontFamily: 'var(--font-sans)',
                     cursor: 'pointer', padding: '4px 0',
                     textDecoration: 'underline',
                     textUnderlineOffset: 4,
                     transition: 'color 150ms',
                   }}
-                  onMouseEnter={(e) => { e.currentTarget.style.color = 'rgba(255,255,255,0.9)' }}
-                  onMouseLeave={(e) => { e.currentTarget.style.color = 'rgba(255,255,255,0.55)' }}
+                  onMouseEnter={(e) => { e.currentTarget.style.color = 'rgba(255,255,255,0.96)' }}
+                  onMouseLeave={(e) => { e.currentTarget.style.color = 'rgba(255,255,255,0.78)' }}
                 >
                   Oppure continua senza account →
                 </button>

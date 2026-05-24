@@ -65,6 +65,7 @@ export default function MeseScreen({ transactions, onDelete }: MeseScreenProps) 
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
           <button
             type="button"
+            aria-label="Mese precedente"
             onClick={goBack}
             style={{
               width: 32, height: 32, borderRadius: '50%',
@@ -91,6 +92,7 @@ export default function MeseScreen({ transactions, onDelete }: MeseScreenProps) 
 
           <button
             type="button"
+            aria-label="Mese successivo"
             onClick={goForward}
             disabled={isCurrent}
             style={{
@@ -98,8 +100,8 @@ export default function MeseScreen({ transactions, onDelete }: MeseScreenProps) 
               background: 'var(--secondary)', border: 'none',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               cursor: isCurrent ? 'default' : 'pointer',
-              color: isCurrent ? 'var(--muted-foreground)' : 'var(--foreground)',
-              opacity: isCurrent ? 0.35 : 1,
+              color: isCurrent ? 'color-mix(in oklab, var(--muted-foreground) 50%, transparent)' : 'var(--foreground)',
+              opacity: isCurrent ? 0.5 : 1,
               transition: 'background 150ms',
             }}
             onMouseEnter={(e) => { if (!isCurrent) e.currentTarget.style.background = 'var(--muted)' }}
@@ -287,10 +289,14 @@ export default function MeseScreen({ transactions, onDelete }: MeseScreenProps) 
           padding: '60px 20px',
           color: 'var(--muted-foreground)',
         }}>
-          <div style={{ fontSize: 48, marginBottom: 16 }}>📭</div>
-          <div style={{ fontSize: 16, fontWeight: 600, marginBottom: 6 }}>Nessun movimento</div>
-          <div style={{ fontSize: 14 }}>
-            {isCurrent ? 'Aggiungi le tue spese dalla schermata Home' : 'Nessuna transazione in questo mese'}
+          <div style={{ fontSize: 48, marginBottom: 16, opacity: 0.85 }}>✨</div>
+          <div style={{ fontSize: 16, fontWeight: 700, color: 'var(--foreground)', marginBottom: 6 }}>
+            {isCurrent ? 'Nessun movimento, ancora' : 'Mese senza movimenti'}
+          </div>
+          <div style={{ fontSize: 14, maxWidth: 280, margin: '0 auto', lineHeight: 1.5 }}>
+            {isCurrent
+              ? 'Apri la Home e aggiungi la prima spesa — bastano un paio di parole.'
+              : 'Non hai registrato entrate o spese in questo mese.'}
           </div>
         </div>
       )}

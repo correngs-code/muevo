@@ -28,6 +28,7 @@ export default function QuickAdd({ onAdd }: QuickAddProps) {
   const [category, setCategory] = useState('Altro')
   const [listening, setListening] = useState(false)
   const [voiceError, setVoiceError] = useState<string | null>(null)
+  const [focused, setFocused] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
   const recognitionRef = useRef<any>(null)
 
@@ -35,16 +36,16 @@ export default function QuickAdd({ onAdd }: QuickAddProps) {
   const icon = parsed ? guessIcon(parsed.name, category) : '✨'
 
   useEffect(() => {
-    if (value) return
+    if (value || focused) return
     const timer = setInterval(() => {
       setPlaceholderIndex((i) => (i + 1) % PLACEHOLDERS.length)
     }, 2200)
     return () => clearInterval(timer)
-  }, [value])
+  }, [value, focused])
 
   useEffect(() => {
     if (!voiceError) return
-    const t = setTimeout(() => setVoiceError(null), 3000)
+    const t = setTimeout(() => setVoiceError(null), 4500)
     return () => clearTimeout(t)
   }, [voiceError])
 
@@ -178,10 +179,17 @@ export default function QuickAdd({ onAdd }: QuickAddProps) {
         <input
           ref={inputRef}
           type="text"
+          inputMode="text"
+          autoComplete="off"
+          autoCorrect="off"
+          spellCheck={false}
           value={value}
           onChange={(e) => setValue(e.target.value)}
           onKeyDown={handleKeyDown}
-          placeholder={listening ? 'Ti sto ascoltando…' : PLACEHOLDERS[placeholderIndex]}
+          onFocus={() => setFocused(true)}
+          onBlur={() => setFocused(false)}
+          placeholder={listening ? 'Ti sto ascoltando…' : focused ? 'Es. pizza 12 oppure stipendio 1200' : PLACEHOLDERS[placeholderIndex]}
+          aria-label="Aggiungi entrata o spesa"
           style={{
             flex: 1,
             border: 'none',
@@ -263,15 +271,19 @@ export default function QuickAdd({ onAdd }: QuickAddProps) {
 
       {/* Voice error */}
       {voiceError && (
-        <div style={{
-          marginTop: 8, padding: '6px 12px',
-          background: 'oklch(0.62 0.22 25 / 0.1)',
-          border: '1px solid oklch(0.62 0.22 25 / 0.2)',
-          borderRadius: 10,
-          fontSize: 12, color: 'oklch(0.55 0.22 25)',
-          textAlign: 'center',
-          animation: 'slideUp 200ms cubic-bezier(0.22,1,0.36,1)',
-        }}>
+        <div
+          role="alert"
+          style={{
+            marginTop: 8, padding: '8px 14px',
+            background: 'oklch(0.62 0.22 25 / 0.12)',
+            border: '1px solid oklch(0.62 0.22 25 / 0.28)',
+            borderRadius: 10,
+            fontSize: 12, fontWeight: 600,
+            color: 'oklch(0.50 0.22 25)',
+            textAlign: 'center',
+            animation: 'slideUp 200ms cubic-bezier(0.22,1,0.36,1)',
+          }}
+        >
           {voiceError}
         </div>
       )}
@@ -327,6 +339,8 @@ export default function QuickAdd({ onAdd }: QuickAddProps) {
           animation: 'slideUp 220ms cubic-bezier(0.22,1,0.36,1)',
           scrollbarWidth: 'none',
           msOverflowStyle: 'none',
+          WebkitOverflowScrolling: 'touch',
+          overscrollBehaviorX: 'contain',
         }}>
           {CATEGORIES.map((cat) => (
             <button

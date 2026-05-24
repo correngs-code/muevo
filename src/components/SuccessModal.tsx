@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { formatEUR } from '../lib/expenses'
 
 interface SuccessData {
@@ -13,18 +13,34 @@ interface SuccessModalProps {
   onClose: () => void
 }
 
+const EXIT_DURATION = 220
+
 export default function SuccessModal({ data, onClose }: SuccessModalProps) {
+  const [exiting, setExiting] = useState(false)
+
+  const handleClose = useCallback(() => {
+    if (exiting) return
+    setExiting(true)
+    setTimeout(() => {
+      setExiting(false)
+      onClose()
+    }, EXIT_DURATION)
+  }, [exiting, onClose])
+
   useEffect(() => {
     if (!data) return
-    const timer = setTimeout(onClose, 1800)
+    setExiting(false)
+    const timer = setTimeout(() => handleClose(), 1800)
     return () => clearTimeout(timer)
-  }, [data, onClose])
+  }, [data, handleClose])
 
   if (!data) return null
 
   return (
     <div
-      onClick={onClose}
+      onClick={handleClose}
+      role="status"
+      aria-live="polite"
       style={{
         position: 'fixed',
         inset: 0,
@@ -35,10 +51,19 @@ export default function SuccessModal({ data, onClose }: SuccessModalProps) {
         background: 'rgba(5,7,13,0.3)',
         backdropFilter: 'blur(8px)',
         WebkitBackdropFilter: 'blur(8px)',
-        animation: 'fadeIn 180ms cubic-bezier(0.22,1,0.36,1)',
+        animation: exiting
+          ? `successFadeOut ${EXIT_DURATION}ms cubic-bezier(0.4,0,1,1) forwards`
+          : 'fadeIn 180ms cubic-bezier(0.22,1,0.36,1)',
         padding: '0 24px',
       }}
     >
+      <style>{`
+        @keyframes successFadeOut { from { opacity: 1 } to { opacity: 0 } }
+        @keyframes successScaleOut {
+          from { opacity: 1; transform: scale(1) }
+          to   { opacity: 0; transform: scale(0.94) }
+        }
+      `}</style>
       <div
         onClick={(e) => e.stopPropagation()}
         style={{
@@ -51,7 +76,9 @@ export default function SuccessModal({ data, onClose }: SuccessModalProps) {
           textAlign: 'center',
           maxWidth: 320,
           width: '100%',
-          animation: 'scaleIn 220ms cubic-bezier(0.22,1,0.36,1)',
+          animation: exiting
+            ? `successScaleOut ${EXIT_DURATION}ms cubic-bezier(0.4,0,1,1) forwards`
+            : 'scaleIn 220ms cubic-bezier(0.22,1,0.36,1)',
           boxShadow: '0 24px 60px -16px rgba(0,0,0,0.18)',
         }}
       >
@@ -75,13 +102,15 @@ export default function SuccessModal({ data, onClose }: SuccessModalProps) {
           color: 'oklch(0.20 0.015 265)',
           marginBottom: 8,
           letterSpacing: '-0.02em',
+          wordBreak: 'break-word',
         }}>
           {data.name}
         </div>
 
         {/* Amount */}
         <div style={{
-          fontSize: 32, fontWeight: 800,
+          fontSize: 'clamp(26px, 8vw, 32px)',
+          fontWeight: 800,
           color: 'oklch(0.20 0.015 265)',
           fontVariantNumeric: 'tabular-nums',
           letterSpacing: '-0.03em',
