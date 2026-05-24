@@ -3,6 +3,7 @@ import { guessIcon } from './lib/expenses'
 import Landing from './components/Landing'
 import HomeScreen from './components/HomeScreen'
 import MeseScreen from './components/MeseScreen'
+import AnnoScreen from './components/AnnoScreen'
 import BottomNav from './components/BottomNav'
 import SuccessModal from './components/SuccessModal'
 
@@ -27,15 +28,57 @@ type AddPayload = { name: string; amount: number; isIncome: boolean; icon: strin
 
 const IS_DEMO = !import.meta.env.VITE_SUPABASE_URL
 
+// Helper to make a date at N months ago
+function daysAgo(d: number) { return new Date(Date.now() - d * 86400000).toISOString() }
+function monthsAgo(m: number, day = 5) {
+  const d = new Date(); d.setMonth(d.getMonth() - m); d.setDate(day)
+  return d.toISOString()
+}
+
 const DEMO_SEED: Transaction[] = [
-  { id: 'e1', user_id: 'demo', name: 'Stipendio', amount: 2400, kind: 'income',  category: 'Altro',            icon: '💰', created_at: new Date(Date.now() - 4 * 86400000).toISOString() },
-  { id: 'e2', user_id: 'demo', name: 'Affitto',   amount: 780,  kind: 'expense', category: 'Casa & Bollette',   icon: '🏠', created_at: new Date(Date.now() - 3 * 86400000).toISOString() },
-  { id: 'e3', user_id: 'demo', name: 'Spotify',   amount: 9.99, kind: 'expense', category: 'Abbonamenti',       icon: '🎧', created_at: new Date(Date.now() - 2 * 86400000).toISOString() },
-  { id: 'e4', user_id: 'demo', name: 'Esselunga', amount: 64.3, kind: 'expense', category: 'Spesa quotidiana',  icon: '🛒', created_at: new Date(Date.now() - 2 * 86400000).toISOString() },
-  { id: 'e5', user_id: 'demo', name: 'Caffè',     amount: 1.5,  kind: 'expense', category: 'Cibo & Delivery',   icon: '☕', created_at: new Date(Date.now() - 86400000).toISOString() },
-  { id: 'e6', user_id: 'demo', name: 'Netflix',   amount: 12.99,kind: 'expense', category: 'Abbonamenti',       icon: '🍿', created_at: new Date(Date.now() - 86400000).toISOString() },
-  { id: 'e7', user_id: 'demo', name: 'Benzina',   amount: 48,   kind: 'expense', category: 'Trasporti',         icon: '⛽', created_at: new Date(Date.now() - 43200000).toISOString() },
-  { id: 'e8', user_id: 'demo', name: 'Pizza',     amount: 24.5, kind: 'expense', category: 'Cibo & Delivery',   icon: '🍕', created_at: new Date(Date.now() - 3600000).toISOString() },
+  // ── Mese corrente ──
+  { id: 'c1', user_id:'demo', name:'Stipendio',    amount:2400,  kind:'income',  category:'Altro',           icon:'💰', created_at: daysAgo(4) },
+  { id: 'c2', user_id:'demo', name:'Affitto',       amount:780,   kind:'expense', category:'Casa & Bollette', icon:'🏠', created_at: daysAgo(3) },
+  { id: 'c3', user_id:'demo', name:'Spotify',       amount:9.99,  kind:'expense', category:'Abbonamenti',     icon:'🎧', created_at: daysAgo(3) },
+  { id: 'c4', user_id:'demo', name:'Esselunga',     amount:64.3,  kind:'expense', category:'Spesa quotidiana',icon:'🛒', created_at: daysAgo(2) },
+  { id: 'c5', user_id:'demo', name:'Caffè',         amount:1.5,   kind:'expense', category:'Cibo & Delivery', icon:'☕', created_at: daysAgo(1) },
+  { id: 'c6', user_id:'demo', name:'Netflix',       amount:12.99, kind:'expense', category:'Abbonamenti',     icon:'🍿', created_at: daysAgo(1) },
+  { id: 'c7', user_id:'demo', name:'Benzina',       amount:48,    kind:'expense', category:'Trasporti',       icon:'⛽', created_at: daysAgo(1) },
+  { id: 'c8', user_id:'demo', name:'Pizza',         amount:24.5,  kind:'expense', category:'Cibo & Delivery', icon:'🍕', created_at: daysAgo(0) },
+  // ── Mese -1 ──
+  { id: 'b1', user_id:'demo', name:'Stipendio',    amount:2400,  kind:'income',  category:'Altro',           icon:'💰', created_at: monthsAgo(1,1) },
+  { id: 'b2', user_id:'demo', name:'Affitto',       amount:780,   kind:'expense', category:'Casa & Bollette', icon:'🏠', created_at: monthsAgo(1,2) },
+  { id: 'b3', user_id:'demo', name:'Palestra',      amount:39,    kind:'expense', category:'Salute & Fitness',icon:'💪', created_at: monthsAgo(1,5) },
+  { id: 'b4', user_id:'demo', name:'Esselunga',     amount:71.2,  kind:'expense', category:'Spesa quotidiana',icon:'🛒', created_at: monthsAgo(1,8) },
+  { id: 'b5', user_id:'demo', name:'Farmacia',      amount:18.5,  kind:'expense', category:'Salute & Fitness',icon:'💊', created_at: monthsAgo(1,12) },
+  { id: 'b6', user_id:'demo', name:'Netflix',       amount:12.99, kind:'expense', category:'Abbonamenti',     icon:'🍿', created_at: monthsAgo(1,15) },
+  { id: 'b7', user_id:'demo', name:'Benzina',       amount:52,    kind:'expense', category:'Trasporti',       icon:'⛽', created_at: monthsAgo(1,20) },
+  { id: 'b8', user_id:'demo', name:'Sushi',         amount:31,    kind:'expense', category:'Cibo & Delivery', icon:'🍣', created_at: monthsAgo(1,22) },
+  // ── Mese -2 ──
+  { id: 'a1', user_id:'demo', name:'Stipendio',    amount:2400,  kind:'income',  category:'Altro',           icon:'💰', created_at: monthsAgo(2,1) },
+  { id: 'a2', user_id:'demo', name:'Affitto',       amount:780,   kind:'expense', category:'Casa & Bollette', icon:'🏠', created_at: monthsAgo(2,2) },
+  { id: 'a3', user_id:'demo', name:'Treno Milano',  amount:28.5,  kind:'expense', category:'Trasporti',       icon:'🚆', created_at: monthsAgo(2,7) },
+  { id: 'a4', user_id:'demo', name:'Freelance',     amount:650,   kind:'income',  category:'Altro',           icon:'💼', created_at: monthsAgo(2,10) },
+  { id: 'a5', user_id:'demo', name:'Esselunga',     amount:58.9,  kind:'expense', category:'Spesa quotidiana',icon:'🛒', created_at: monthsAgo(2,14) },
+  { id: 'a6', user_id:'demo', name:'Amazon',        amount:44,    kind:'expense', category:'Shopping',        icon:'📦', created_at: monthsAgo(2,18) },
+  { id: 'a7', user_id:'demo', name:'Netflix',       amount:12.99, kind:'expense', category:'Abbonamenti',     icon:'🍿', created_at: monthsAgo(2,20) },
+  { id: 'a8', user_id:'demo', name:'Dentista',      amount:120,   kind:'expense', category:'Salute & Fitness',icon:'🦷', created_at: monthsAgo(2,25) },
+  // ── Mese -3 ──
+  { id: 'z1', user_id:'demo', name:'Stipendio',    amount:2400,  kind:'income',  category:'Altro',           icon:'💰', created_at: monthsAgo(3,1) },
+  { id: 'z2', user_id:'demo', name:'Affitto',       amount:780,   kind:'expense', category:'Casa & Bollette', icon:'🏠', created_at: monthsAgo(3,2) },
+  { id: 'z3', user_id:'demo', name:'Volo Barcellona',amount:189,  kind:'expense', category:'Viaggi',          icon:'✈️', created_at: monthsAgo(3,5) },
+  { id: 'z4', user_id:'demo', name:'Hotel',         amount:210,   kind:'expense', category:'Viaggi',          icon:'🏨', created_at: monthsAgo(3,6) },
+  { id: 'z5', user_id:'demo', name:'Esselunga',     amount:55.4,  kind:'expense', category:'Spesa quotidiana',icon:'🛒', created_at: monthsAgo(3,15) },
+  { id: 'z6', user_id:'demo', name:'Netflix',       amount:12.99, kind:'expense', category:'Abbonamenti',     icon:'🍿', created_at: monthsAgo(3,20) },
+  { id: 'z7', user_id:'demo', name:'Regalo',        amount:300,   kind:'income',  category:'Altro',           icon:'🎁', created_at: monthsAgo(3,22) },
+  // ── Mese -4 ──
+  { id: 'y1', user_id:'demo', name:'Stipendio',    amount:2400,  kind:'income',  category:'Altro',           icon:'💰', created_at: monthsAgo(4,1) },
+  { id: 'y2', user_id:'demo', name:'Affitto',       amount:780,   kind:'expense', category:'Casa & Bollette', icon:'🏠', created_at: monthsAgo(4,2) },
+  { id: 'y3', user_id:'demo', name:'Assicurazione', amount:145,   kind:'expense', category:'Tasse & Assicurazioni',icon:'📄',created_at: monthsAgo(4,3) },
+  { id: 'y4', user_id:'demo', name:'Esselunga',     amount:67,    kind:'expense', category:'Spesa quotidiana',icon:'🛒', created_at: monthsAgo(4,10) },
+  { id: 'y5', user_id:'demo', name:'Palestra',      amount:39,    kind:'expense', category:'Salute & Fitness',icon:'💪', created_at: monthsAgo(4,12) },
+  { id: 'y6', user_id:'demo', name:'Netflix',       amount:12.99, kind:'expense', category:'Abbonamenti',     icon:'🍿', created_at: monthsAgo(4,20) },
+  { id: 'y7', user_id:'demo', name:'Spotify',       amount:9.99,  kind:'expense', category:'Abbonamenti',     icon:'🎧', created_at: monthsAgo(4,20) },
 ]
 
 function loadDemo(): Transaction[] {
@@ -57,14 +100,25 @@ async function getSupabaseModule() {
   return import('./lib/supabase')
 }
 
+// ── Helpers ───────────────────────────────────────────────────────────────────
+
+function currentMonthTxs(txs: Transaction[]): Transaction[] {
+  const now = new Date()
+  return txs.filter((t) => {
+    const d = new Date(t.created_at)
+    return d.getFullYear() === now.getFullYear() && d.getMonth() === now.getMonth()
+  })
+}
+
 // ── App ──────────────────────────────────────────────────────────────────────
 
 export default function App() {
-  const [loggedIn, setLoggedIn] = useState(IS_DEMO) // demo = always logged in
-  const [loading, setLoading]   = useState(!IS_DEMO)
-  const [screen, setScreen]     = useState<Screen>('home')
+  const [loggedIn, setLoggedIn]   = useState(IS_DEMO)
+  const [loading, setLoading]     = useState(!IS_DEMO)
+  const [screen, setScreen]       = useState<Screen>('home')
+  // Full-year transactions — MeseScreen/AnnoScreen filter client-side
   const [transactions, setTransactions] = useState<Transaction[]>(IS_DEMO ? loadDemo() : [])
-  const [success, setSuccess]   = useState<SuccessData | null>(null)
+  const [success, setSuccess]     = useState<SuccessData | null>(null)
   const [userInitials, setUserInitials] = useState(IS_DEMO ? 'DM' : 'U')
 
   // ── Supabase auth ──────────────────────────────────────────────────────────
@@ -77,11 +131,7 @@ export default function App() {
       if (u) {
         setLoggedIn(true)
         const initials = (u.user_metadata?.full_name as string | undefined)
-          ?.split(' ')
-          .map((w) => w[0])
-          .join('')
-          .slice(0, 2)
-          .toUpperCase() ?? 'U'
+          ?.split(' ').map((w) => w[0]).join('').slice(0, 2).toUpperCase() ?? 'U'
         setUserInitials(initials)
         const txs = await fetchTransactions(u.id).catch(() => [] as Transaction[])
         setTransactions(txs)
@@ -94,6 +144,8 @@ export default function App() {
         if (u2) {
           const txs = await fetchTransactions(u2.id).catch(() => [] as Transaction[])
           setTransactions(txs)
+        } else {
+          setTransactions([])
         }
       })
       return () => subscription.unsubscribe()
@@ -115,20 +167,14 @@ export default function App() {
         icon,
         created_at: new Date().toISOString(),
       }
-      setTransactions((prev) => {
-        const next = [tx, ...prev]
-        saveDemo(next)
-        return next
-      })
-      setSuccess({ icon: tx.icon, name: tx.name, amount: tx.amount, isIncome: tx.kind === 'income' })
+      setTransactions((prev) => { const next = [tx, ...prev]; saveDemo(next); return next })
+      setSuccess({ icon, name: tx.name, amount: tx.amount, isIncome: tx.kind === 'income' })
       return
     }
 
-    const { addTransaction } = await getSupabaseModule()
-    const { supabase } = await getSupabaseModule()
+    const { addTransaction, supabase } = await getSupabaseModule()
     const { data: { session } } = await supabase.auth.getSession()
     if (!session) return
-
     const tx = await addTransaction({
       user_id: session.user.id,
       name: parsed.name,
@@ -144,11 +190,7 @@ export default function App() {
   // ── Delete ────────────────────────────────────────────────────────────────
   const handleDelete = useCallback(async (id: string) => {
     if (IS_DEMO) {
-      setTransactions((prev) => {
-        const next = prev.filter((t) => t.id !== id)
-        saveDemo(next)
-        return next
-      })
+      setTransactions((prev) => { const next = prev.filter((t) => t.id !== id); saveDemo(next); return next })
       return
     }
     const { deleteTransaction } = await getSupabaseModule()
@@ -165,20 +207,17 @@ export default function App() {
     setTransactions([])
   }, [])
 
-  // ── Launch (landing CTA) ──────────────────────────────────────────────────
+  // ── Landing CTA ───────────────────────────────────────────────────────────
   const handleLaunch = useCallback(async () => {
-    if (IS_DEMO) {
-      setLoggedIn(true)
-      return
-    }
+    if (IS_DEMO) { setLoggedIn(true); return }
     const { signInWithGoogle } = await getSupabaseModule()
     await signInWithGoogle()
   }, [])
 
-  // ── Computed ──────────────────────────────────────────────────────────────
-  const remaining = transactions.reduce(
-    (sum, t) => sum + (t.kind === 'income' ? t.amount : -t.amount),
-    0
+  // ── Derived ───────────────────────────────────────────────────────────────
+  const monthTxs = currentMonthTxs(transactions)
+  const remaining = monthTxs.reduce(
+    (sum, t) => sum + (t.kind === 'income' ? t.amount : -t.amount), 0
   )
 
   // ── Render ────────────────────────────────────────────────────────────────
@@ -193,19 +232,14 @@ export default function App() {
 
   return (
     <div style={{ position: 'relative', maxWidth: 576, margin: '0 auto', minHeight: '100dvh', background: 'var(--gradient-bg)' }}>
-      {/* Demo banner */}
       {IS_DEMO && (
         <div style={{
           position: 'fixed', top: 0, left: '50%', transform: 'translateX(-50%)',
           width: '100%', maxWidth: 576, zIndex: 200,
-          background: 'rgba(59,108,255,0.12)',
-          backdropFilter: 'blur(12px)',
-          borderBottom: '1px solid rgba(59,108,255,0.18)',
-          textAlign: 'center',
-          padding: '6px 16px',
-          fontSize: 11, fontWeight: 500,
-          color: '#3b6cff',
-          letterSpacing: '0.04em',
+          background: 'rgba(59,108,255,0.10)', backdropFilter: 'blur(12px)',
+          borderBottom: '1px solid rgba(59,108,255,0.15)',
+          textAlign: 'center', padding: '6px 16px',
+          fontSize: 11, fontWeight: 500, color: '#3b6cff', letterSpacing: '0.04em',
         }}>
           Modalità demo · i dati sono salvati localmente
         </div>
@@ -221,14 +255,10 @@ export default function App() {
           />
         )}
         {screen === 'mese' && (
-          <MeseScreen transactions={transactions} onDelete={handleDelete} />
+          <MeseScreen transactions={monthTxs} onDelete={handleDelete} />
         )}
         {screen === 'anno' && (
-          <div style={{ padding: '80px 20px', textAlign: 'center', color: 'var(--muted-foreground)' }}>
-            <div style={{ fontSize: 48, marginBottom: 16 }}>📅</div>
-            <div style={{ fontSize: 18, fontWeight: 600, marginBottom: 8 }}>Vista annuale</div>
-            <div style={{ fontSize: 14 }}>In arrivo prossimamente</div>
-          </div>
+          <AnnoScreen transactions={transactions} />
         )}
       </div>
 

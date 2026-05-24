@@ -27,16 +27,16 @@ export async function signOut() {
   return supabase.auth.signOut()
 }
 
+// Fetches all transactions for the current calendar year
 export async function fetchTransactions(userId: string): Promise<Transaction[]> {
-  const startOfMonth = new Date()
-  startOfMonth.setDate(1)
-  startOfMonth.setHours(0, 0, 0, 0)
+  const startOfYear = new Date(new Date().getFullYear(), 0, 1)
+  startOfYear.setHours(0, 0, 0, 0)
 
   const { data, error } = await supabase
     .from('transactions')
     .select('*')
     .eq('user_id', userId)
-    .gte('created_at', startOfMonth.toISOString())
+    .gte('created_at', startOfYear.toISOString())
     .order('created_at', { ascending: false })
 
   if (error) throw error
