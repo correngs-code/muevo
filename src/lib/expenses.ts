@@ -137,9 +137,10 @@ export function parseInput(raw: string): ParsedInput | null {
   // Clean text for the transaction name
   const cleaned = text
     .replace(m[0], ' ')
-    .replace(/€|euro|euri/gi, ' ')
+    .replace(/[€$£¥₹₽¢]/g, ' ')
+    .replace(/\b(euro|euri|eur|dollar[oi]?|dollars?|usd|bucks?|sterlin[ae]|pounds?|gbp|yen|jpy|franch[oi]|franco|chf|coron[ae]|sek|nok|dkk|peso[s]?|reais?|rupie?|rupees?|inr|rubl[oi]|rub)\b/gi, ' ')
     .replace(/(?:^|\s)[-−+]\s*/g, ' ')
-    .replace(/\b(meno|più|piu|negativo|di|per|spesi|spesa|euro|euri)\b/gi, ' ')
+    .replace(/\b(meno|più|piu|negativo|di|per|spesi|spesa)\b/gi, ' ')
     .replace(/\s+/g, ' ')
     .trim()
 
