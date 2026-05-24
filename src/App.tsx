@@ -162,10 +162,11 @@ export default function App() {
   }, [])
 
   // ── Derived ───────────────────────────────────────────────────────────────
-  const monthTxs = currentMonthTxs(transactions)
-  const remaining = monthTxs.reduce(
-    (sum, t) => sum + (t.kind === 'income' ? t.amount : -t.amount), 0
-  )
+  const monthTxs    = currentMonthTxs(transactions)
+  const totalIncome  = monthTxs.filter((t) => t.kind === 'income').reduce((s, t) => s + t.amount, 0)
+  const totalExpenses = monthTxs.filter((t) => t.kind === 'expense').reduce((s, t) => s + t.amount, 0)
+  const remaining    = totalIncome - totalExpenses
+  const recentTxs    = [...monthTxs].slice(0, 5)
 
   // ── Render ────────────────────────────────────────────────────────────────
   if (loading) return (
@@ -196,13 +197,18 @@ export default function App() {
         {screen === 'home' && (
           <HomeScreen
             remaining={remaining}
+            totalIncome={totalIncome}
+            totalExpenses={totalExpenses}
+            recentTransactions={recentTxs}
             userInitials={userInitials}
             onAdd={handleAdd}
             onSignOut={handleSignOut}
+            onViewAll={() => setScreen('mese')}
+            onDelete={handleDelete}
           />
         )}
         {screen === 'mese' && (
-          <MeseScreen transactions={monthTxs} onDelete={handleDelete} />
+          <MeseScreen transactions={transactions} onDelete={handleDelete} />
         )}
         {screen === 'anno' && (
           <AnnoScreen transactions={transactions} onDelete={handleDelete} />

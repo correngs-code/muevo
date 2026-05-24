@@ -126,3 +126,19 @@ export function IconLogOut({ size, weight, ...rest }: IconProps) {
     </Icon>
   )
 }
+
+export function IconChevronLeft({ size, weight, ...rest }: IconProps) {
+  return (
+    <Icon size={size} weight={weight} {...rest}>
+      <path d="M15 18l-6-6 6-6" />
+    </Icon>
+  )
+}
+
+export function IconChevronRight({ size, weight, ...rest }: IconProps) {
+  return (
+    <Icon size={size} weight={weight} {...rest}>
+      <path d="M9 18l6-6-6-6" />
+    </Icon>
+  )
+}

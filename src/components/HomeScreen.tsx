@@ -1,6 +1,8 @@
 import QuickAdd from './QuickAdd'
-import { IconLogOut } from './Icons'
-import { formatEUR } from '../lib/expenses'
+import ListRow from './ListRow'
+import { IconLogOut, IconArrowRight } from './Icons'
+import { formatEUR, formatDate } from '../lib/expenses'
+import type { Transaction } from '../lib/supabase'
 
 function MuevoMark() {
   return (
@@ -44,16 +46,34 @@ interface QuickAddItem {
 
 interface HomeScreenProps {
   remaining: number
+  totalIncome: number
+  totalExpenses: number
+  recentTransactions: Transaction[]
   userInitials: string
   onAdd: (item: QuickAddItem) => void
   onSignOut: () => void
+  onViewAll: () => void
+  onDelete: (id: string) => void
 }
 
-export default function HomeScreen({ remaining, userInitials, onAdd, onSignOut }: HomeScreenProps) {
+export default function HomeScreen({
+  remaining,
+  totalIncome,
+  totalExpenses,
+  recentTransactions,
+  userInitials,
+  onAdd,
+  onSignOut,
+  onViewAll,
+  onDelete,
+}: HomeScreenProps) {
   const isPositive = remaining >= 0
   const glowColor = isPositive
     ? 'radial-gradient(ellipse 60% 30% at 50% 0%, oklch(0.88 0.12 152 / 0.22) 0%, transparent 70%)'
     : 'radial-gradient(ellipse 60% 30% at 50% 0%, oklch(0.72 0.18 25 / 0.18) 0%, transparent 70%)'
+
+  const spentPct = totalIncome > 0 ? Math.min((totalExpenses / totalIncome) * 100, 100) : 0
+  const overBudget = totalExpenses > totalIncome
 
   return (
     <div style={{
@@ -108,10 +128,9 @@ export default function HomeScreen({ remaining, userInitials, onAdd, onSignOut }
       <div style={{
         position: 'relative',
         zIndex: 1,
-        padding: '32px 20px 48px',
+        padding: '24px 20px 20px',
         textAlign: 'center',
       }}>
-        {/* Greeting */}
         <div style={{
           fontSize: 13, fontWeight: 600,
           color: 'var(--muted-foreground)',
@@ -122,7 +141,6 @@ export default function HomeScreen({ remaining, userInitials, onAdd, onSignOut }
           ti rimangono
         </div>
 
-        {/* Balance amount */}
         <div style={{
           fontSize: 'clamp(48px, 12vw, 72px)',
           fontWeight: 800,
@@ -137,7 +155,6 @@ export default function HomeScreen({ remaining, userInitials, onAdd, onSignOut }
           {formatEUR(Math.abs(remaining))}
         </div>
 
-        {/* Sign indicator */}
         {remaining < 0 && (
           <div style={{
             fontSize: 13, fontWeight: 600,
@@ -150,10 +167,37 @@ export default function HomeScreen({ remaining, userInitials, onAdd, onSignOut }
 
         <div style={{
           fontSize: 14, color: 'var(--muted-foreground)',
-          fontWeight: 500,
+          fontWeight: 500, marginBottom: 16,
         }}>
           questo mese
         </div>
+
+        {/* Spending percentage bar */}
+        {totalIncome > 0 && (
+          <div style={{ maxWidth: 320, margin: '0 auto', padding: '0 4px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6, fontSize: 11, color: 'var(--muted-foreground)' }}>
+              <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'oklch(0.62 0.22 25)', display: 'inline-block' }} />
+                {Math.round(spentPct)}% spese
+              </span>
+              <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'oklch(0.68 0.18 152)', display: 'inline-block' }} />
+                {formatEUR(totalIncome)} entrate
+              </span>
+            </div>
+            <div style={{ height: 4, background: 'rgba(255,255,255,0.12)', borderRadius: 9999, overflow: 'hidden' }}>
+              <div style={{
+                height: '100%',
+                width: `${spentPct}%`,
+                background: overBudget
+                  ? 'oklch(0.62 0.22 25)'
+                  : 'linear-gradient(90deg, oklch(0.62 0.22 260), oklch(0.68 0.18 255))',
+                borderRadius: 9999,
+                transition: 'width 600ms cubic-bezier(0.22,1,0.36,1)',
+              }} />
+            </div>
+          </div>
+        )}
       </div>
 
       {/* QuickAdd section */}
@@ -167,32 +211,91 @@ export default function HomeScreen({ remaining, userInitials, onAdd, onSignOut }
         gap: 12,
       }}>
         <QuickAdd onAdd={onAdd} />
-        <p style={{
-          margin: 0,
-          fontSize: 13,
-          color: 'var(--muted-foreground)',
-          textAlign: 'center',
-          maxWidth: 300,
-          lineHeight: 1.5,
-        }}>
-          Aggiungi un movimento e guarda la magia
-        </p>
       </div>
+
+      {/* Recent transactions */}
+      {recentTransactions.length > 0 && (
+        <div style={{ position: 'relative', zIndex: 1, padding: '24px 16px 0' }}>
+          <div style={{
+            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+            marginBottom: 8, padding: '0 4px',
+          }}>
+            <span style={{
+              fontSize: 12, fontWeight: 700,
+              color: 'var(--muted-foreground)',
+              letterSpacing: '0.08em',
+              textTransform: 'uppercase',
+            }}>
+              Ultimi movimenti
+            </span>
+            <button
+              type="button"
+              onClick={onViewAll}
+              style={{
+                display: 'inline-flex', alignItems: 'center', gap: 4,
+                background: 'transparent', border: 'none',
+                color: 'var(--primary)', fontSize: 12, fontFamily: 'var(--font-sans)',
+                fontWeight: 600, cursor: 'pointer', padding: '4px 4px',
+                transition: 'opacity 150ms',
+              }}
+              onMouseEnter={(e) => { e.currentTarget.style.opacity = '0.7' }}
+              onMouseLeave={(e) => { e.currentTarget.style.opacity = '1' }}
+            >
+              Vedi tutti <IconArrowRight size={12} />
+            </button>
+          </div>
+          <div style={{
+            background: 'var(--card)',
+            border: '1px solid var(--border)',
+            borderRadius: 'var(--radius)',
+            padding: '0 16px',
+            boxShadow: 'var(--shadow-card)',
+          }}>
+            {recentTransactions.map((t) => (
+              <ListRow
+                key={t.id}
+                icon={t.icon}
+                name={t.name}
+                meta={`${formatDate(t.created_at)} · ${t.category}`}
+                amount={t.amount}
+                kind={t.kind}
+                onDelete={() => onDelete(t.id)}
+              />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Empty state hint */}
+      {recentTransactions.length === 0 && (
+        <div style={{
+          position: 'relative', zIndex: 1,
+          textAlign: 'center', padding: '16px 20px 0',
+        }}>
+          <p style={{
+            margin: 0, fontSize: 13,
+            color: 'var(--muted-foreground)',
+            textAlign: 'center',
+            maxWidth: 300,
+            lineHeight: 1.5,
+            marginLeft: 'auto', marginRight: 'auto',
+          }}>
+            Aggiungi un movimento e guarda la magia
+          </p>
+        </div>
+      )}
 
       {/* Sign out small link */}
       <div style={{
-        position: 'relative',
-        zIndex: 1,
-        textAlign: 'center',
-        marginTop: 40,
+        position: 'relative', zIndex: 1,
+        textAlign: 'center', marginTop: 32,
       }}>
         <button
           type="button"
           onClick={onSignOut}
           style={{
             display: 'inline-flex', alignItems: 'center', gap: 6,
-            background: 'transparent',
-            border: 'none',
+            background: 'transparent', border: 'none',
             color: 'var(--muted-foreground)',
             fontSize: 12, fontFamily: 'var(--font-sans)',
             cursor: 'pointer', opacity: 0.6,

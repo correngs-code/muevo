@@ -191,10 +191,13 @@ export default function QuickAdd({ onAdd }: QuickAddProps) {
           marginTop: 8,
           display: 'flex',
           gap: 6,
-          flexWrap: 'wrap',
+          overflowX: 'auto',
+          paddingBottom: 4,
           animation: 'slideUp 220ms cubic-bezier(0.22,1,0.36,1)',
+          scrollbarWidth: 'none',
+          msOverflowStyle: 'none',
         }}>
-          {CATEGORIES.slice(0, 6).map((cat) => (
+          {CATEGORIES.map((cat) => (
             <button
               key={cat.value}
               type="button"
@@ -209,6 +212,7 @@ export default function QuickAdd({ onAdd }: QuickAddProps) {
                 fontWeight: 500, cursor: 'pointer',
                 transition: 'background 150ms, color 150ms',
                 backdropFilter: 'blur(8px)',
+                flexShrink: 0,
               }}
             >
               {cat.emoji} {cat.value}
