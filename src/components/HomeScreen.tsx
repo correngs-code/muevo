@@ -1,8 +1,6 @@
 import QuickAdd from './QuickAdd'
-import ListRow from './ListRow'
-import { IconLogOut, IconArrowRight } from './Icons'
-import { formatEUR, formatDate } from '../lib/expenses'
-import type { Transaction } from '../lib/supabase'
+import { IconLogOut } from './Icons'
+import { formatEUR } from '../lib/expenses'
 
 function MuevoMark() {
   return (
@@ -48,24 +46,18 @@ interface HomeScreenProps {
   remaining: number
   totalIncome: number
   totalExpenses: number
-  recentTransactions: Transaction[]
   userInitials: string
   onAdd: (item: QuickAddItem) => void
   onSignOut: () => void
-  onViewAll: () => void
-  onDelete: (id: string) => void
 }
 
 export default function HomeScreen({
   remaining,
   totalIncome,
   totalExpenses,
-  recentTransactions,
   userInitials,
   onAdd,
   onSignOut,
-  onViewAll,
-  onDelete,
 }: HomeScreenProps) {
   const isPositive = remaining >= 0
   const glowColor = isPositive
@@ -128,7 +120,7 @@ export default function HomeScreen({
       <div style={{
         position: 'relative',
         zIndex: 1,
-        padding: '24px 20px 20px',
+        padding: '32px 20px 28px',
         textAlign: 'center',
       }}>
         <div style={{
@@ -167,7 +159,7 @@ export default function HomeScreen({
 
         <div style={{
           fontSize: 14, color: 'var(--muted-foreground)',
-          fontWeight: 500, marginBottom: 16,
+          fontWeight: 500, marginBottom: 20,
         }}>
           questo mese
         </div>
@@ -211,84 +203,22 @@ export default function HomeScreen({
         gap: 12,
       }}>
         <QuickAdd onAdd={onAdd} />
-      </div>
-
-      {/* Recent transactions */}
-      {recentTransactions.length > 0 && (
-        <div style={{ position: 'relative', zIndex: 1, padding: '24px 16px 0' }}>
-          <div style={{
-            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-            marginBottom: 8, padding: '0 4px',
-          }}>
-            <span style={{
-              fontSize: 12, fontWeight: 700,
-              color: 'var(--muted-foreground)',
-              letterSpacing: '0.08em',
-              textTransform: 'uppercase',
-            }}>
-              Ultimi movimenti
-            </span>
-            <button
-              type="button"
-              onClick={onViewAll}
-              style={{
-                display: 'inline-flex', alignItems: 'center', gap: 4,
-                background: 'transparent', border: 'none',
-                color: 'var(--primary)', fontSize: 12, fontFamily: 'var(--font-sans)',
-                fontWeight: 600, cursor: 'pointer', padding: '4px 4px',
-                transition: 'opacity 150ms',
-              }}
-              onMouseEnter={(e) => { e.currentTarget.style.opacity = '0.7' }}
-              onMouseLeave={(e) => { e.currentTarget.style.opacity = '1' }}
-            >
-              Vedi tutti <IconArrowRight size={12} />
-            </button>
-          </div>
-          <div style={{
-            background: 'var(--card)',
-            border: '1px solid var(--border)',
-            borderRadius: 'var(--radius)',
-            padding: '0 16px',
-            boxShadow: 'var(--shadow-card)',
-          }}>
-            {recentTransactions.map((t) => (
-              <ListRow
-                key={t.id}
-                icon={t.icon}
-                name={t.name}
-                meta={`${formatDate(t.created_at)} · ${t.category}`}
-                amount={t.amount}
-                kind={t.kind}
-                onDelete={() => onDelete(t.id)}
-              />
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Empty state hint */}
-      {recentTransactions.length === 0 && (
-        <div style={{
-          position: 'relative', zIndex: 1,
-          textAlign: 'center', padding: '16px 20px 0',
+        <p style={{
+          margin: '8px 0 0',
+          fontSize: 13,
+          color: 'var(--muted-foreground)',
+          textAlign: 'center',
+          maxWidth: 320,
+          lineHeight: 1.5,
         }}>
-          <p style={{
-            margin: 0, fontSize: 13,
-            color: 'var(--muted-foreground)',
-            textAlign: 'center',
-            maxWidth: 300,
-            lineHeight: 1.5,
-            marginLeft: 'auto', marginRight: 'auto',
-          }}>
-            Aggiungi un movimento e guarda la magia
-          </p>
-        </div>
-      )}
+          Scrivi o usa il microfono. Esempio: <em>"pizza 12"</em>, <em>"stipendio 1200"</em>, <em>"-50 stipendio"</em>
+        </p>
+      </div>
 
       {/* Sign out small link */}
       <div style={{
         position: 'relative', zIndex: 1,
-        textAlign: 'center', marginTop: 32,
+        textAlign: 'center', marginTop: 40,
       }}>
         <button
           type="button"

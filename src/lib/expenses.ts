@@ -59,7 +59,7 @@ export function formatDate(ts: string | number): string {
   return s.charAt(0).toUpperCase() + s.slice(1)
 }
 
-const INCOME_KEYWORDS = ['stipendio', 'salary', 'paga', 'bonus', 'rimborso', 'freelance', 'vinted', 'vendita', 'regalo']
+const INCOME_KEYWORDS = ['stipendio', 'salary', 'paga', 'bonus', 'rimborso', 'freelance', 'vinted', 'vendita', 'regalo', 'entrata', 'guadagno', 'incasso', 'commissione', 'dividendo', 'interessi', 'pensione', 'cashback']
 
 export type ParsedInput = {
   name: string
@@ -67,17 +67,78 @@ export type ParsedInput = {
   isIncome: boolean
 }
 
+// Italian written numbers → digits (basic, for voice input)
+const ITALIAN_NUMBERS: Record<string, number> = {
+  zero: 0, uno: 1, una: 1, due: 2, tre: 3, quattro: 4, cinque: 5,
+  sei: 6, sette: 7, otto: 8, nove: 9, dieci: 10,
+  undici: 11, dodici: 12, tredici: 13, quattordici: 14, quindici: 15,
+  sedici: 16, diciassette: 17, diciotto: 18, diciannove: 19,
+  venti: 20, trenta: 30, quaranta: 40, cinquanta: 50,
+  sessanta: 60, settanta: 70, ottanta: 80, novanta: 90,
+  cento: 100, mille: 1000, mila: 1000,
+}
+
+// Converts "mille e duecento" → "1200"; leaves digits untouched
+function normalizeItalianNumbers(text: string): string {
+  const lower = ' ' + text.toLowerCase() + ' '
+  // Replace each word with digits (best-effort, additive)
+  let normalized = lower
+  // Compound: "duecento" "trecento" etc
+  const hundreds: Record<string, number> = {
+    duecento: 200, trecento: 300, quattrocento: 400, cinquecento: 500,
+    seicento: 600, settecento: 700, ottocento: 800, novecento: 900,
+  }
+  for (const [w, n] of Object.entries(hundreds)) {
+    normalized = normalized.replace(new RegExp(`\\b${w}\\b`, 'g'), ` ${n} `)
+  }
+  // Singles
+  for (const [w, n] of Object.entries(ITALIAN_NUMBERS)) {
+    normalized = normalized.replace(new RegExp(`\\b${w}\\b`, 'g'), ` ${n} `)
+  }
+  // Sum adjacent digit-tokens that came from words: "1000 200" → "1200" (only if both >= 100 or similar)
+  normalized = normalized.replace(/(\d+)\s+e\s+(\d+)/g, (_, a, b) => String(Number(a) + Number(b)))
+  normalized = normalized.replace(/(\d{3,})\s+(\d{1,3})\b/g, (_, a, b) => {
+    const na = Number(a), nb = Number(b)
+    return na >= nb * 10 ? String(na + nb) : `${a} ${b}`
+  })
+  return normalized.trim()
+}
+
 export function parseInput(raw: string): ParsedInput | null {
-  const text = raw.trim()
+  const text = normalizeItalianNumbers(raw.trim())
   if (!text) return null
+
+  // Detect explicit signs (override everything)
+  const hasMinus = /(?:^|\s)[-−]\s*\d|\b(meno|negativo)\b/i.test(text)
+  const hasPlus  = /(?:^|\s)\+\s*\d|\b(più|piu)\b/i.test(text)
+
+  // Extract the first number
   const m = text.match(/(\d+(?:[.,]\d{1,2})?)/)
   if (!m) return null
   const amount = parseFloat(m[1].replace(',', '.'))
   if (!isFinite(amount) || amount <= 0) return null
-  const cleaned = text.replace(m[0], ' ').replace(/€|euro/gi, ' ').trim()
+
+  // Clean text for the transaction name
+  const cleaned = text
+    .replace(m[0], ' ')
+    .replace(/€|euro|euri/gi, ' ')
+    .replace(/(?:^|\s)[-−+]\s*/g, ' ')
+    .replace(/\b(meno|più|piu|negativo|di|per|spesi|spesa|euro|euri)\b/gi, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+
   const low = cleaned.toLowerCase()
-  const isIncome = INCOME_KEYWORDS.some((k) => low.includes(k)) || /\+/.test(text)
-  const name = (cleaned.charAt(0).toUpperCase() + cleaned.slice(1)) || 'Spesa'
+
+  // Sign logic: explicit sign wins over keywords
+  let isIncome: boolean
+  if (hasMinus) isIncome = false
+  else if (hasPlus) isIncome = true
+  else isIncome = INCOME_KEYWORDS.some((k) => low.includes(k))
+
+  const name = cleaned
+    ? cleaned.charAt(0).toUpperCase() + cleaned.slice(1)
+    : (isIncome ? 'Entrata' : 'Spesa')
+
   return { name, amount, isIncome }
 }
 

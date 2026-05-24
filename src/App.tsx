@@ -162,11 +162,10 @@ export default function App() {
   }, [])
 
   // ── Derived ───────────────────────────────────────────────────────────────
-  const monthTxs    = currentMonthTxs(transactions)
-  const totalIncome  = monthTxs.filter((t) => t.kind === 'income').reduce((s, t) => s + t.amount, 0)
+  const monthTxs      = currentMonthTxs(transactions)
+  const totalIncome   = monthTxs.filter((t) => t.kind === 'income').reduce((s, t) => s + t.amount, 0)
   const totalExpenses = monthTxs.filter((t) => t.kind === 'expense').reduce((s, t) => s + t.amount, 0)
-  const remaining    = totalIncome - totalExpenses
-  const recentTxs    = [...monthTxs].slice(0, 5)
+  const remaining     = totalIncome - totalExpenses
 
   // ── Render ────────────────────────────────────────────────────────────────
   if (loading) return (
@@ -199,12 +198,9 @@ export default function App() {
             remaining={remaining}
             totalIncome={totalIncome}
             totalExpenses={totalExpenses}
-            recentTransactions={recentTxs}
             userInitials={userInitials}
             onAdd={handleAdd}
             onSignOut={handleSignOut}
-            onViewAll={() => setScreen('mese')}
-            onDelete={handleDelete}
           />
         )}
         {screen === 'mese' && (

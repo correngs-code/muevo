@@ -26,7 +26,10 @@ export default function QuickAdd({ onAdd }: QuickAddProps) {
   const [value, setValue] = useState('')
   const [placeholderIndex, setPlaceholderIndex] = useState(0)
   const [category, setCategory] = useState('Altro')
+  const [listening, setListening] = useState(false)
+  const [voiceError, setVoiceError] = useState<string | null>(null)
   const inputRef = useRef<HTMLInputElement>(null)
+  const recognitionRef = useRef<any>(null)
 
   const parsed = parseInput(value)
   const icon = parsed ? guessIcon(parsed.name, category) : '✨'
@@ -39,12 +42,25 @@ export default function QuickAdd({ onAdd }: QuickAddProps) {
     return () => clearInterval(timer)
   }, [value])
 
-  const handleSubmit = () => {
-    if (!parsed) return
-    const finalIcon = guessIcon(parsed.name, category)
-    onAdd({ ...parsed, icon: finalIcon })
+  useEffect(() => {
+    if (!voiceError) return
+    const t = setTimeout(() => setVoiceError(null), 3000)
+    return () => clearTimeout(t)
+  }, [voiceError])
+
+  const submitParsed = (text: string): boolean => {
+    const p = parseInput(text)
+    if (!p) return false
+    const finalIcon = guessIcon(p.name, category)
+    onAdd({ ...p, icon: finalIcon })
     setValue('')
     setCategory('Altro')
+    return true
+  }
+
+  const handleSubmit = () => {
+    if (!parsed) return
+    submitParsed(value)
     inputRef.current?.focus()
   }
 
@@ -52,11 +68,72 @@ export default function QuickAdd({ onAdd }: QuickAddProps) {
     if (e.key === 'Enter') handleSubmit()
   }
 
-  const borderColor = parsed
-    ? parsed.isIncome
-      ? 'oklch(0.68 0.18 152 / 0.5)'
-      : 'oklch(0.58 0.18 255 / 0.4)'
-    : 'var(--border)'
+  const startVoice = () => {
+    const SR = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition
+    if (!SR) {
+      setVoiceError('Voce non supportata su questo browser. Prova con Chrome o Safari.')
+      return
+    }
+
+    if (listening && recognitionRef.current) {
+      recognitionRef.current.stop()
+      return
+    }
+
+    const recognition = new SR()
+    recognition.lang = 'it-IT'
+    recognition.continuous = false
+    recognition.interimResults = true
+    recognition.maxAlternatives = 1
+
+    recognition.onstart = () => {
+      setListening(true)
+      setVoiceError(null)
+      setValue('')
+    }
+    recognition.onend = () => {
+      setListening(false)
+      recognitionRef.current = null
+    }
+    recognition.onerror = (e: any) => {
+      setListening(false)
+      if (e.error === 'not-allowed' || e.error === 'service-not-allowed') {
+        setVoiceError('Microfono bloccato. Concedi il permesso nelle impostazioni del browser.')
+      } else if (e.error === 'no-speech') {
+        setVoiceError('Non ti ho sentito. Riprova.')
+      } else if (e.error !== 'aborted') {
+        setVoiceError('Errore vocale. Riprova.')
+      }
+    }
+    recognition.onresult = (event: any) => {
+      let transcript = ''
+      for (let i = event.resultIndex; i < event.results.length; i++) {
+        transcript += event.results[i][0].transcript
+      }
+      setValue(transcript)
+
+      const lastResult = event.results[event.results.length - 1]
+      if (lastResult.isFinal) {
+        const ok = submitParsed(transcript)
+        if (!ok) {
+          setVoiceError(`Non ho capito un importo in "${transcript}". Aggiungi un numero.`)
+        }
+      }
+    }
+
+    recognitionRef.current = recognition
+    try { recognition.start() } catch {
+      setListening(false)
+    }
+  }
+
+  const borderColor = listening
+    ? 'oklch(0.62 0.22 25 / 0.7)'
+    : parsed
+      ? parsed.isIncome
+        ? 'oklch(0.68 0.18 152 / 0.5)'
+        : 'oklch(0.58 0.18 255 / 0.4)'
+      : 'var(--border)'
 
   const submitBg = parsed
     ? parsed.isIncome
@@ -66,6 +143,13 @@ export default function QuickAdd({ onAdd }: QuickAddProps) {
 
   return (
     <div style={{ width: '100%', maxWidth: 480 }}>
+      <style>{`
+        @keyframes micPulse {
+          0%, 100% { box-shadow: 0 0 0 0 oklch(0.62 0.22 25 / 0.45); }
+          50%      { box-shadow: 0 0 0 10px oklch(0.62 0.22 25 / 0); }
+        }
+      `}</style>
+
       {/* Main pill input */}
       <div style={{
         display: 'flex',
@@ -86,7 +170,6 @@ export default function QuickAdd({ onAdd }: QuickAddProps) {
           borderRadius: 9999,
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           fontSize: 18, flexShrink: 0,
-          transition: 'transform 200ms',
         }}>
           {icon}
         </div>
@@ -98,7 +181,7 @@ export default function QuickAdd({ onAdd }: QuickAddProps) {
           value={value}
           onChange={(e) => setValue(e.target.value)}
           onKeyDown={handleKeyDown}
-          placeholder={PLACEHOLDERS[placeholderIndex]}
+          placeholder={listening ? 'Ti sto ascoltando…' : PLACEHOLDERS[placeholderIndex]}
           style={{
             flex: 1,
             border: 'none',
@@ -112,10 +195,12 @@ export default function QuickAdd({ onAdd }: QuickAddProps) {
           }}
         />
 
-        {/* Right button */}
-        {!value ? (
+        {/* Right button: mic or submit */}
+        {!value && !listening ? (
           <button
             type="button"
+            onClick={startVoice}
+            aria-label="Parla per aggiungere"
             style={{
               width: 40, height: 40,
               background: 'var(--muted)',
@@ -129,6 +214,25 @@ export default function QuickAdd({ onAdd }: QuickAddProps) {
             }}
             onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--secondary)' }}
             onMouseLeave={(e) => { e.currentTarget.style.background = 'var(--muted)' }}
+          >
+            <IconMic size={18} />
+          </button>
+        ) : listening ? (
+          <button
+            type="button"
+            onClick={startVoice}
+            aria-label="Ferma ascolto"
+            style={{
+              width: 40, height: 40,
+              background: 'oklch(0.62 0.22 25)',
+              border: 'none',
+              borderRadius: 9999,
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              cursor: 'pointer',
+              color: '#fff',
+              flexShrink: 0,
+              animation: 'micPulse 1.4s ease-in-out infinite',
+            }}
           >
             <IconMic size={18} />
           </button>
@@ -157,8 +261,35 @@ export default function QuickAdd({ onAdd }: QuickAddProps) {
         )}
       </div>
 
+      {/* Voice error */}
+      {voiceError && (
+        <div style={{
+          marginTop: 8, padding: '6px 12px',
+          background: 'oklch(0.62 0.22 25 / 0.1)',
+          border: '1px solid oklch(0.62 0.22 25 / 0.2)',
+          borderRadius: 10,
+          fontSize: 12, color: 'oklch(0.55 0.22 25)',
+          textAlign: 'center',
+          animation: 'slideUp 200ms cubic-bezier(0.22,1,0.36,1)',
+        }}>
+          {voiceError}
+        </div>
+      )}
+
+      {/* Listening hint */}
+      {listening && !value && (
+        <div style={{
+          marginTop: 8, padding: '6px 12px',
+          fontSize: 12, color: 'var(--muted-foreground)',
+          textAlign: 'center',
+          fontStyle: 'italic',
+        }}>
+          Esempio: "Pizza dieci euro" oppure "Stipendio 1200"
+        </div>
+      )}
+
       {/* Parsed preview */}
-      {parsed && (
+      {parsed && !listening && (
         <div style={{
           marginTop: 10,
           padding: '8px 16px',
@@ -186,7 +317,7 @@ export default function QuickAdd({ onAdd }: QuickAddProps) {
       )}
 
       {/* Category selector (shown when parsed) */}
-      {parsed && (
+      {parsed && !listening && (
         <div style={{
           marginTop: 8,
           display: 'flex',
