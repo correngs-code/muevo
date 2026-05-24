@@ -78,12 +78,11 @@ const ITALIAN_NUMBERS: Record<string, number> = {
   cento: 100, mille: 1000, mila: 1000,
 }
 
-// Converts "mille e duecento" → "1200"; leaves digits untouched
+// Converts "mille e duecento" → "1200", "uno e cinquanta" → "1.50"
 function normalizeItalianNumbers(text: string): string {
-  const lower = ' ' + text.toLowerCase() + ' '
-  // Replace each word with digits (best-effort, additive)
-  let normalized = lower
-  // Compound: "duecento" "trecento" etc
+  let normalized = ' ' + text.toLowerCase() + ' '
+
+  // 1) Words → digits first (so "uno virgola cinquanta" becomes "1 virgola 50")
   const hundreds: Record<string, number> = {
     duecento: 200, trecento: 300, quattrocento: 400, cinquecento: 500,
     seicento: 600, settecento: 700, ottocento: 800, novecento: 900,
@@ -91,12 +90,29 @@ function normalizeItalianNumbers(text: string): string {
   for (const [w, n] of Object.entries(hundreds)) {
     normalized = normalized.replace(new RegExp(`\\b${w}\\b`, 'g'), ` ${n} `)
   }
-  // Singles
   for (const [w, n] of Object.entries(ITALIAN_NUMBERS)) {
     normalized = normalized.replace(new RegExp(`\\b${w}\\b`, 'g'), ` ${n} `)
   }
-  // Sum adjacent digit-tokens that came from words: "1000 200" → "1200" (only if both >= 100 or similar)
-  normalized = normalized.replace(/(\d+)\s+e\s+(\d+)/g, (_, a, b) => String(Number(a) + Number(b)))
+
+  // 2) Spoken decimal separators: "1 virgola 50" → "1,50"
+  normalized = normalized.replace(/(\d+)\s+(?:virgola|punto)\s+(\d+)/g, (_, a, b) => {
+    const cents = b.length === 1 ? `0${b}` : b
+    return `${a},${cents}`
+  })
+
+  // "X e Y": decide between decimal (euros.cents) and addition (compound number)
+  // Rule: if both X and Y < 100 → decimal ("1 e 50" → "1.50")
+  //       otherwise → addition ("1000 e 200" → "1200", "100 e 50" → "150")
+  normalized = normalized.replace(/(\d+)\s+e\s+(\d+)/g, (_, a, b) => {
+    const na = Number(a), nb = Number(b)
+    if (na < 100 && nb < 100) {
+      const cents = String(nb).padStart(2, '0')
+      return `${na},${cents}`
+    }
+    return String(na + nb)
+  })
+
+  // Adjacent compound: "1000 200" → "1200" when the second is a clean smaller magnitude
   normalized = normalized.replace(/(\d{3,})\s+(\d{1,3})\b/g, (_, a, b) => {
     const na = Number(a), nb = Number(b)
     return na >= nb * 10 ? String(na + nb) : `${a} ${b}`
