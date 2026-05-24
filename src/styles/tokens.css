@@ -1,0 +1,81 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap");
+
+:root {
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", Menlo, monospace;
+  --font-feature-numeric: "tnum", "ss01";
+  --letter-spacing-tight: -0.025em;
+  --letter-spacing-display: -0.03em;
+  --letter-spacing-eyebrow: 0.16em;
+
+  --background: oklch(0.975 0.003 250);
+  --foreground: oklch(0.20 0.015 265);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.20 0.015 265);
+  --muted: oklch(0.965 0.008 250);
+  --muted-foreground: oklch(0.52 0.025 260);
+  --secondary: oklch(0.96 0.008 250);
+  --border: oklch(0.92 0.01 250);
+  --ring: oklch(0.58 0.20 255);
+
+  --primary: oklch(0.58 0.18 255);
+  --primary-foreground: oklch(0.99 0 0);
+  --brand-blue: #3b6cff;
+  --brand-blue-soft: #5b8bff;
+  --brand-blue-pale: #7aa2ff;
+  --brand-ink: #05070d;
+
+  --success: oklch(0.68 0.18 152);
+  --destructive: oklch(0.62 0.22 25);
+
+  --pie-1: oklch(0.86 0.08 25);
+  --pie-2: oklch(0.88 0.08 60);
+  --pie-3: oklch(0.92 0.09 95);
+  --pie-4: oklch(0.88 0.07 145);
+  --pie-5: oklch(0.87 0.07 190);
+  --pie-6: oklch(0.88 0.07 230);
+  --pie-7: oklch(0.85 0.08 290);
+  --pie-8: oklch(0.87 0.08 340);
+
+  --gradient-bg: linear-gradient(180deg, oklch(0.98 0.004 250) 0%, oklch(0.965 0.005 250) 100%);
+  --gradient-primary: linear-gradient(135deg, oklch(0.55 0.18 255), oklch(0.65 0.15 245));
+  --gradient-success: linear-gradient(135deg, oklch(0.68 0.18 152), oklch(0.74 0.18 175));
+
+  --radius: 1rem;
+  --radius-pill: 9999px;
+
+  --shadow-card: 0 1px 2px oklch(0.20 0.015 265 / 0.03), 0 4px 16px -4px oklch(0.20 0.015 265 / 0.06);
+  --shadow-elevated: 0 1px 3px oklch(0.20 0.015 265 / 0.04), 0 12px 32px -8px oklch(0.20 0.015 265 / 0.10);
+  --shadow-cta: 0 10px 30px -10px rgba(59,108,255,0.65), inset 0 1px 0 rgba(255,255,255,0.22);
+
+  --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
+  --dur-fast: 150ms;
+  --dur-base: 220ms;
+  --dur-slide: 280ms;
+}
+
+.landing-root {
+  --background: #05070d;
+  --foreground: rgba(255,255,255,0.96);
+  --card: #0b0f1a;
+  --muted-foreground: rgba(255,255,255,0.62);
+  --border: rgba(255,255,255,0.08);
+  --primary: #3b6cff;
+}
+
+html {
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  background: var(--gradient-bg);
+  background-attachment: fixed;
+  color: var(--foreground);
+}
+
+@keyframes fadeIn { from { opacity: 0 } to { opacity: 1 } }
+@keyframes scaleIn { from { opacity: 0; transform: scale(.92) } to { opacity: 1; transform: scale(1) } }
+@keyframes slideUp { from { opacity: 0; transform: translateY(8px) } to { opacity: 1; transform: translateY(0) } }
+@keyframes spin { from { transform: rotate(0deg) } to { transform: rotate(360deg) } }

@@ -1,0 +1,105 @@
+import { useEffect } from 'react'
+import { formatEUR } from '../lib/expenses'
+
+interface SuccessData {
+  icon: string
+  name: string
+  amount: number
+  isIncome: boolean
+}
+
+interface SuccessModalProps {
+  data: SuccessData | null
+  onClose: () => void
+}
+
+export default function SuccessModal({ data, onClose }: SuccessModalProps) {
+  useEffect(() => {
+    if (!data) return
+    const timer = setTimeout(onClose, 1800)
+    return () => clearTimeout(timer)
+  }, [data, onClose])
+
+  if (!data) return null
+
+  return (
+    <div
+      onClick={onClose}
+      style={{
+        position: 'fixed',
+        inset: 0,
+        zIndex: 200,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        background: 'rgba(5,7,13,0.3)',
+        backdropFilter: 'blur(8px)',
+        WebkitBackdropFilter: 'blur(8px)',
+        animation: 'fadeIn 180ms cubic-bezier(0.22,1,0.36,1)',
+        padding: '0 24px',
+      }}
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        style={{
+          background: 'oklch(1 0 0 / 0.55)',
+          backdropFilter: 'blur(28px) saturate(180%)',
+          WebkitBackdropFilter: 'blur(28px) saturate(180%)',
+          border: '1px solid rgba(255,255,255,0.7)',
+          borderRadius: 28,
+          padding: '40px 36px',
+          textAlign: 'center',
+          maxWidth: 320,
+          width: '100%',
+          animation: 'scaleIn 220ms cubic-bezier(0.22,1,0.36,1)',
+          boxShadow: '0 24px 60px -16px rgba(0,0,0,0.18)',
+        }}
+      >
+        {/* Emoji circle */}
+        <div style={{
+          width: 80, height: 80,
+          background: 'linear-gradient(135deg, oklch(0.97 0.005 250) 0%, oklch(0.95 0.008 250) 100%)',
+          border: '2px solid rgba(255,255,255,0.8)',
+          borderRadius: '50%',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          fontSize: 40,
+          margin: '0 auto 20px',
+          boxShadow: '0 4px 16px -4px rgba(0,0,0,0.1)',
+        }}>
+          {data.icon}
+        </div>
+
+        {/* Name */}
+        <div style={{
+          fontSize: 18, fontWeight: 700,
+          color: 'oklch(0.20 0.015 265)',
+          marginBottom: 8,
+          letterSpacing: '-0.02em',
+        }}>
+          {data.name}
+        </div>
+
+        {/* Amount */}
+        <div style={{
+          fontSize: 32, fontWeight: 800,
+          color: 'oklch(0.20 0.015 265)',
+          fontVariantNumeric: 'tabular-nums',
+          letterSpacing: '-0.03em',
+          marginBottom: 12,
+        }}>
+          {data.isIncome ? '+' : '−'}{formatEUR(data.amount)}
+        </div>
+
+        {/* Label */}
+        <div style={{
+          fontSize: 13, fontWeight: 600,
+          color: 'oklch(0.52 0.025 260)',
+          letterSpacing: '0.04em',
+          textTransform: 'uppercase',
+        }}>
+          {data.isIncome ? 'Entrata aggiunta' : 'Spesa aggiunta'}
+        </div>
+      </div>
+    </div>
+  )
+}
