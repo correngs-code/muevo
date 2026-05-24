@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="_base.css">
+  <style>
+    body { padding: 24px 28px; gap: 18px; align-items: center; }
+    .hero-card {
+      flex: 1;
+      position: relative;
+      padding: 20px 22px;
+      border-radius: 28px;
+      background: var(--gradient-vivid);
+      color: oklch(0.18 0.02 265);
+      overflow: hidden;
+      box-shadow: var(--shadow-elevated);
+    }
+    .hero-card::after {
+      content: ""; position: absolute; right: -32px; bottom: -32px;
+      width: 128px; height: 128px; border-radius: 9999px;
+      background: rgba(255,255,255,0.18); filter: blur(28px);
+    }
+    .eyebrow {
+      font-size: 11px; font-weight: 600;
+      text-transform: uppercase; letter-spacing: 0.14em;
+      color: #ffffff;
+      text-shadow: 0 1px 2px rgba(15,23,42,0.18);
+    }
+    .amt { margin-top: 8px; font-size: 36px; font-weight: 700; font-variant-numeric: tabular-nums; letter-spacing: -0.02em; line-height: 1; }
+    .bar { margin-top: 14px; height: 6px; border-radius: 9999px; background: rgba(15,23,42,0.18); overflow: hidden; }
+    .fill { height: 100%; width: 62%; border-radius: 9999px; background: oklch(0.18 0.02 265); }
+    .row { display: flex; justify-content: space-between; margin-top: 8px; font-size: 11px; opacity: 0.8; font-variant-numeric: tabular-nums; }
+    .splits { width: 180px; display: flex; flex-direction: column; gap: 10px; }
+    .split {
+      padding: 10px 12px; border-radius: 14px;
+      background: #fff; border: 1px solid color-mix(in oklab, var(--border) 60%, transparent);
+      box-shadow: var(--shadow-card);
+    }
+    .split.inc {
+      background: linear-gradient(135deg, oklch(0.96 0.07 152 / 0.55), oklch(0.99 0.02 175 / 0.4));
+      border: 2px solid oklch(0.68 0.18 152 / 0.45);
+    }
+    .lb { font-size: 9px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.12em; color: var(--muted-foreground); }
+    .lb.inc { color: oklch(0.42 0.16 152); }
+    .vl { margin-top: 4px; font-size: 17px; font-weight: 700; font-variant-numeric: tabular-nums; }
+    .vl.b { color: oklch(0.55 0.22 258); }
+    .vl.g { background: var(--gradient-success); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  </style>
+</head>
+<body>
+  <div class="hero-card">
+    <div class="eyebrow">Ti rimangono questo mese</div>
+    <div class="amt">€ 1.247,80</div>
+    <div class="bar"><div class="fill"></div></div>
+    <div class="row"><span>62% delle entrate spese</span><span>€ 753 / € 2.000</span></div>
+  </div>
+  <div class="splits">
+    <div class="split"><div class="lb">Spese del mese</div><div class="vl b">€ 753,20</div></div>
+    <div class="split inc"><div class="lb inc">Entrate</div><div class="vl g">€ 2.001,00</div></div>
+  </div>
+</body>
+</html>

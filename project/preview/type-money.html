@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="_base.css">
+  <style>
+    body { padding: 24px 28px; align-items: center; }
+    .stack { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 6px 22px; flex: 1; }
+    .amt {
+      font-family: var(--font-sans);
+      font-variant-numeric: tabular-nums;
+      font-feature-settings: "tnum","ss01";
+      letter-spacing: -0.02em;
+      font-weight: 700;
+      color: var(--foreground);
+    }
+    .a-lg { font-size: 44px; letter-spacing: -0.03em; }
+    .a-md { font-size: 28px; }
+    .a-sm { font-size: 17px; }
+    .pos { color: oklch(0.62 0.17 152); }
+    .neg { color: var(--destructive); }
+    .label { font-family: ui-monospace, Menlo, monospace; font-size: 10px; color: var(--muted-foreground); white-space: nowrap; }
+  </style>
+</head>
+<body>
+  <div class="stack">
+    <div class="amt a-lg">€ 1.247,80</div>
+    <div class="label">hero · 44/700 · −0.03em · tnum</div>
+    <div class="amt a-md">€ 84,50</div>
+    <div class="label">card · 28/700 · −0.02em · tnum</div>
+    <div class="amt a-sm pos">+ €1.200,00</div>
+    <div class="label">income · 17/600 · success</div>
+    <div class="amt a-sm neg">− €34,00</div>
+    <div class="label">expense · uses U+2212 minus</div>
+  </div>
+</body>
+</html>

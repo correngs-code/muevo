@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="_base.css">
+  <style>
+    body { padding: 20px 24px; align-items: center; }
+    .grid { display: grid; grid-template-columns: repeat(8, 1fr); gap: 10px; flex: 1; }
+    .tile {
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 4px;
+      padding: 10px 4px;
+      border-radius: 16px;
+      background: #fff; border: 1px solid color-mix(in oklab, var(--border) 60%, transparent);
+      box-shadow: var(--shadow-card);
+    }
+    .em { font-size: 22px; line-height: 1; }
+    .lb { font-size: 9px; font-weight: 500; color: var(--foreground); text-align: center; line-height: 1.15; }
+  </style>
+</head>
+<body>
+  <div class="grid">
+    <div class="tile"><div class="em">🛒</div><div class="lb">Spesa</div></div>
+    <div class="tile"><div class="em">🍔</div><div class="lb">Cibo</div></div>
+    <div class="tile"><div class="em">⛽</div><div class="lb">Trasporti</div></div>
+    <div class="tile"><div class="em">🏠</div><div class="lb">Casa</div></div>
+    <div class="tile"><div class="em">📺</div><div class="lb">Abbon.</div></div>
+    <div class="tile"><div class="em">💪</div><div class="lb">Salute</div></div>
+    <div class="tile"><div class="em">🛍️</div><div class="lb">Shopping</div></div>
+    <div class="tile"><div class="em">📄</div><div class="lb">Tasse</div></div>
+    <div class="tile"><div class="em">🎉</div><div class="lb">Tempo lib.</div></div>
+    <div class="tile"><div class="em">✈️</div><div class="lb">Viaggi</div></div>
+    <div class="tile"><div class="em">🤖</div><div class="lb">AI &amp; Tech</div></div>
+    <div class="tile"><div class="em">✨</div><div class="lb">Altro</div></div>
+    <div class="tile"><div class="em">☕</div><div class="lb">Caffè</div></div>
+    <div class="tile"><div class="em">🍿</div><div class="lb">Netflix</div></div>
+    <div class="tile"><div class="em">🛵</div><div class="lb">Delivery</div></div>
+    <div class="tile"><div class="em">🚆</div><div class="lb">Treno</div></div>
+  </div>
+</body>
+</html>

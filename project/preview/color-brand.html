@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="_base.css">
+  <style>
+    body { padding: 24px 28px; }
+    .hero { display: flex; align-items: center; gap: 24px; flex: 1; }
+    .chip {
+      height: 120px; width: 120px;
+      border-radius: 28px;
+      background: var(--gradient-vivid);
+      box-shadow: var(--shadow-cta);
+      position: relative;
+      overflow: hidden;
+    }
+    .chip::after {
+      content: ""; position: absolute; inset: 0;
+      background: radial-gradient(60% 60% at 30% 20%, rgba(255,255,255,0.25), transparent 60%);
+    }
+    .meta { display: flex; flex-direction: column; gap: 6px; }
+    .meta .name { font-size: 22px; font-weight: 700; letter-spacing: -0.025em; }
+    .meta .row { display: flex; gap: 18px; font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 11px; color: var(--muted-foreground); }
+    .meta .row strong { color: var(--foreground); font-weight: 600; }
+  </style>
+</head>
+<body>
+  <div class="hero">
+    <div class="chip"></div>
+    <div class="meta">
+      <div class="name">Brand Blue</div>
+      <div class="row"><strong>HEX</strong> #3b6cff</div>
+      <div class="row"><strong>OKLCH</strong> oklch(0.58 0.18 255)</div>
+      <div class="row"><strong>Token</strong> --primary · --brand-blue</div>
+      <div class="row" style="color:var(--muted-foreground)">Carries every CTA, focus ring, glow shadow, and the gradient hero on dark.</div>
+    </div>
+  </div>
+</body>
+</html>

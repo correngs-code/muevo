@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="_base.css">
+  <style>
+    body { padding: 22px 28px; gap: 28px; align-items: center; }
+
+    /* ─── Hero lockup ───────────────────────────────────────────── */
+    .lockup { display: flex; align-items: center; gap: 20px; }
+
+    /* Icon — vivid blue / azzurro only (no white stop) */
+    .icon {
+      position: relative;
+      width: 96px; height: 96px;
+      border-radius: 22px;
+      background:
+        radial-gradient(120% 120% at 0% 100%,
+          #050a44 0%,
+          #1638ff 24%,
+          #00a3ff 56%,
+          #4eecff 100%);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.35),
+        inset 0 -2px 0 rgba(5,10,68,0.30),
+        0 18px 36px -10px rgba(22,56,255,0.50),
+        0 8px 18px -6px rgba(0,163,255,0.38);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .icon::before {
+      content: ""; position: absolute; inset: 1px;
+      border-radius: 21px; pointer-events: none;
+      background: radial-gradient(85% 60% at 50% 0%, rgba(255,255,255,0.22) 0%, rgba(255,255,255,0) 65%);
+    }
+
+    /* Big rounded-stroke M wordmark — replaces the "Muevo" lettering */
+    .mark { width: 130px; height: 96px; display: block; }
+  </style>
+</head>
+<body>
+  <div class="lockup">
+    <div class="icon">
+      <!-- white M with rounded caps + joins; sits inside the gradient tile -->
+      <svg width="56" height="56" viewBox="0 0 56 56" aria-label="Muevo mark">
+        <path
+          d="M 9 47 L 9 12 L 28 36 L 47 12 L 47 47"
+          fill="none"
+          stroke="#ffffff"
+          stroke-width="10"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+      </svg>
+    </div>
+
+    <!-- Wordmark — gradient-filled M with rounded terminals -->
+    <svg class="mark" viewBox="0 0 130 96" aria-label="M wordmark">
+      <defs>
+        <linearGradient id="muevoGrad" x1="0" y1="100%" x2="100%" y2="0">
+          <stop offset="0%"  stop-color="#050a44"/>
+          <stop offset="28%" stop-color="#1638ff"/>
+          <stop offset="62%" stop-color="#00a3ff"/>
+          <stop offset="100%" stop-color="#4eecff"/>
+        </linearGradient>
+      </defs>
+      <path
+        d="M 14 82 L 14 18 L 65 82 L 116 18 L 116 82"
+        fill="none"
+        stroke="url(#muevoGrad)"
+        stroke-width="18"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+    </svg>
+  </div>
+
+  <!-- In-context: amongst other phone apps -->
+  <div style="display: grid; grid-template-columns: repeat(6, 1fr); gap: 14px; width: 100%; max-width: 460px;
+              padding: 12px 14px; border-radius: 22px;
+              background: radial-gradient(60% 100% at 50% 0%, rgba(255,255,255,0.06), transparent 70%),
+                          linear-gradient(180deg, #2c3242 0%, #1c2030 100%);">
+    <div style="aspect-ratio: 1 / 1; border-radius: 13px;
+                background: linear-gradient(135deg, #3a2f6a, #6a4ca6);
+                box-shadow: 0 1px 0 rgba(255,255,255,0.05) inset, 0 4px 10px -4px rgba(0,0,0,0.4);"></div>
+    <div style="aspect-ratio: 1 / 1; border-radius: 13px;
+                background: linear-gradient(135deg, #1f6f4f, #2aa67a);"></div>
+    <div style="position: relative; aspect-ratio: 1 / 1; border-radius: 13px;
+                background: radial-gradient(120% 120% at 0% 100%, #050a44 0%, #1638ff 24%, #00a3ff 56%, #4eecff 100%);
+                display: flex; align-items: center; justify-content: center;
+                box-shadow: 0 1px 0 rgba(255,255,255,0.35) inset, 0 8px 18px -6px rgba(22,56,255,0.55);">
+      <svg width="28" height="28" viewBox="0 0 56 56">
+        <path d="M 9 47 L 9 12 L 28 36 L 47 12 L 47 47"
+              fill="none" stroke="#fff" stroke-width="10"
+              stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <div style="aspect-ratio: 1 / 1; border-radius: 13px;
+                background: linear-gradient(135deg, #b85a25, #f0a64a);"></div>
+    <div style="aspect-ratio: 1 / 1; border-radius: 13px;
+                background: linear-gradient(135deg, #444, #888);"></div>
+    <div style="aspect-ratio: 1 / 1; border-radius: 13px;
+                background: linear-gradient(135deg, #5a1f5a, #b03d8a);"></div>
+  </div>
+</body>
+</html>

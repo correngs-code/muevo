@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="_base.css">
+  <style>
+    body { padding: 32px 28px; gap: 24px; align-items: center; justify-content: space-around; }
+    .cell { display: flex; flex-direction: column; align-items: center; gap: 12px; flex: 1; }
+    .box {
+      width: 90px; height: 70px; border-radius: 18px;
+      background: #fff;
+    }
+    .b-card     { box-shadow: var(--shadow-card); }
+    .b-elevated { box-shadow: var(--shadow-elevated); }
+    .b-glow     { box-shadow: var(--shadow-glow); background: var(--gradient-vivid); }
+    .b-cta      { box-shadow: var(--shadow-cta); background: var(--gradient-vivid); border-radius: 9999px; height: 48px; width: 140px; }
+    .nm { font-size: 11px; font-weight: 600; }
+    .vl { font-family: ui-monospace, Menlo, monospace; font-size: 10px; color: var(--muted-foreground); max-width: 140px; text-align: center; line-height: 1.4; }
+  </style>
+</head>
+<body>
+  <div class="cell"><div class="box b-card"></div><div class="nm">shadow-card</div><div class="vl">resting card / list row</div></div>
+  <div class="cell"><div class="box b-elevated"></div><div class="nm">shadow-elevated</div><div class="vl">hover / dragged / hero card</div></div>
+  <div class="cell"><div class="box b-glow"></div><div class="nm">shadow-glow</div><div class="vl">CTA pulse / Quick Add active</div></div>
+  <div class="cell"><div class="box b-cta"></div><div class="nm">shadow-cta</div><div class="vl">primary buttons w/ inset hi-light</div></div>
+</body>
+</html>

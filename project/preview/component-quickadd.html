@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="_base.css">
+  <style>
+    body { padding: 28px; align-items: center; justify-content: center; }
+    .add {
+      display: flex; align-items: center; gap: 10px;
+      width: 100%; max-width: 520px;
+      padding: 8px 8px 8px 8px;
+      border-radius: 26px;
+      background: rgba(255,255,255,0.95);
+      border: 1px solid color-mix(in oklab, oklch(0.62 0.20 258) 50%, transparent);
+      box-shadow:
+        0 1px 0 oklch(1 0 0 / 0.7) inset,
+        0 10px 30px -14px oklch(0.20 0.015 265 / 0.18),
+        0 24px 60px -28px oklch(0.62 0.20 258 / 0.35);
+      backdrop-filter: blur(20px);
+    }
+    .chip {
+      width: 44px; height: 44px;
+      border-radius: 9999px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px;
+      background:
+        radial-gradient(120% 120% at 30% 20%,
+          rgba(255,255,255,0.9) 0%,
+          color-mix(in oklab, #fff 88%, transparent) 55%,
+          color-mix(in oklab, oklch(0.96 0.008 250) 70%, transparent) 100%);
+      border: 1px solid color-mix(in oklab, var(--border) 50%, transparent);
+      box-shadow: inset 0 1px 0 oklch(1 0 0 / 0.7), 0 1px 2px oklch(0.20 0.015 265 / 0.04);
+    }
+    .text { flex: 1; font-size: 17px; color: var(--foreground); padding: 8px 0; }
+    .text .ph { color: oklch(0.55 0.025 260 / 0.45); }
+    .send {
+      width: 44px; height: 44px;
+      border-radius: 9999px;
+      display: flex; align-items: center; justify-content: center;
+      background: oklch(0.62 0.20 258);
+      color: #fff;
+      box-shadow: 0 6px 18px -6px oklch(0.62 0.20 258 / 0.55), inset 0 1px 0 oklch(1 0 0 / 0.25);
+    }
+    .send svg { width: 20px; height: 20px; }
+    .preview {
+      display: flex; justify-content: space-between; gap: 14px;
+      max-width: 520px; width: 100%;
+      padding: 10px 8px 0 8px;
+      font-size: 11px; color: var(--muted-foreground);
+    }
+    .amt { font-weight: 600; font-variant-numeric: tabular-nums; color: oklch(0.62 0.20 258); }
+    .wrap { display: flex; flex-direction: column; align-items: center; width: 100%; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="add">
+      <div class="chip">🍕</div>
+      <div class="text">pizza 12</div>
+      <div class="send"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg></div>
+    </div>
+    <div class="preview">
+      <span>Cibo &amp; Delivery · Pizza</span>
+      <span class="amt">− €12,00</span>
+    </div>
+  </div>
+</body>
+</html>

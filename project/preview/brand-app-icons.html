@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="_base.css">
+  <style>
+    body { padding: 22px 28px; gap: 22px; align-items: center; justify-content: space-around; }
+    .cell { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+
+    /* Vivid blue/azzurro gradient — no white stop. Brightest hue is
+       a saturated sky cyan, so the top-right corner stays clearly
+       azzurro instead of fading to a white highlight. */
+    .ic {
+      position: relative;
+      border-radius: 22%;
+      background:
+        radial-gradient(125% 125% at 0% 100%,
+          #050a44 0%,
+          #1638ff 22%,
+          #0091ff 48%,
+          #19c8ff 75%,
+          #3fdbff 100%);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.22),
+        inset 0 -2px 0 rgba(5,10,68,0.35),
+        0 18px 36px -10px rgba(22,56,255,0.55),
+        0 8px 18px -6px rgba(0,145,255,0.40),
+        0 4px 10px -4px rgba(0,0,0,0.20);
+      display: flex; align-items: center; justify-content: center;
+    }
+    /* Subtle cyan top highlight (replaces the previous white sheen) */
+    .ic::before {
+      content: ""; position: absolute; inset: 1px;
+      border-radius: 21%; pointer-events: none;
+      background: radial-gradient(85% 60% at 50% 0%,
+        rgba(155,228,255,0.32) 0%,
+        rgba(155,228,255,0) 65%);
+    }
+    /* Crisp inner stroke, with a slightly cyan-tinted edge */
+    .ic::after {
+      content: ""; position: absolute; inset: 0;
+      border-radius: inherit; pointer-events: none;
+      box-shadow: inset 0 0 0 1px rgba(150,220,255,0.22);
+    }
+    .ic svg { position: relative; }
+
+    .ic-512  { width: 120px; height: 120px; }
+    .ic-192  { width: 64px;  height: 64px;  border-radius: 22%; }
+    .ic-192::before { border-radius: 21%; }
+    .ic-apple { width: 64px;  height: 64px;  border-radius: 22%; }
+    .ic-apple::before { border-radius: 21%; }
+    .ic-96   { width: 36px;  height: 36px;  border-radius: 24%; }
+    .ic-96::before { border-radius: 23%; }
+
+    .nm { font-size: 11px; font-weight: 600; }
+    .vl { font-family: ui-monospace, Menlo, monospace; font-size: 10px; color: var(--muted-foreground); }
+  </style>
+</head>
+<body>
+  <!-- 512 -->
+  <div class="cell">
+    <div class="ic ic-512">
+      <svg width="78" height="78" viewBox="0 0 56 56" aria-hidden="true">
+        <path d="M 9 47 L 9 13 L 28 37 L 47 13 L 47 47"
+              fill="none" stroke="#ffffff" stroke-width="9"
+              stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <div class="nm">512 · master</div>
+    <div class="vl">PWA / store</div>
+  </div>
+  <!-- 192 -->
+  <div class="cell">
+    <div class="ic ic-192">
+      <svg width="42" height="42" viewBox="0 0 56 56" aria-hidden="true">
+        <path d="M 9 47 L 9 13 L 28 37 L 47 13 L 47 47"
+              fill="none" stroke="#ffffff" stroke-width="10"
+              stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <div class="nm">192 · home screen</div>
+    <div class="vl">Android / PWA</div>
+  </div>
+  <!-- Apple touch -->
+  <div class="cell">
+    <div class="ic ic-apple">
+      <svg width="42" height="42" viewBox="0 0 56 56" aria-hidden="true">
+        <path d="M 9 47 L 9 13 L 28 37 L 47 13 L 47 47"
+              fill="none" stroke="#ffffff" stroke-width="10"
+              stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <div class="nm">apple-touch</div>
+    <div class="vl">iOS home</div>
+  </div>
+  <!-- 96 -->
+  <div class="cell">
+    <div class="ic ic-96">
+      <svg width="22" height="22" viewBox="0 0 56 56" aria-hidden="true">
+        <path d="M 9 47 L 9 13 L 28 37 L 47 13 L 47 47"
+              fill="none" stroke="#ffffff" stroke-width="11"
+              stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <div class="nm">96 · thumb</div>
+    <div class="vl">favicons</div>
+  </div>
+</body>
+</html>

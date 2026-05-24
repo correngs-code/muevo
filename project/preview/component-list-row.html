@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="_base.css">
+  <style>
+    body { padding: 18px 22px; flex-direction: column; gap: 10px; }
+    .row {
+      display: flex; align-items: center; gap: 12px;
+      padding: 12px 14px;
+      border-radius: 18px;
+      background: oklch(0.96 0.008 250 / 0.6);
+    }
+    .row:hover { background: oklch(0.96 0.008 250 / 0.9); }
+    .av {
+      width: 40px; height: 40px; border-radius: 9999px;
+      background: #fff;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px; flex-shrink: 0;
+    }
+    .mid { flex: 1; min-width: 0; }
+    .title { font-size: 15px; font-weight: 500; color: var(--foreground); line-height: 1.2; }
+    .meta { font-size: 11px; color: color-mix(in oklab, var(--muted-foreground) 70%, transparent); margin-top: 2px; }
+    .amt { font-size: 15px; font-weight: 600; font-variant-numeric: tabular-nums; letter-spacing: -0.01em; }
+    .neg { color: var(--foreground); }
+    .pos { color: oklch(0.62 0.17 152); }
+    .trash {
+      width: 28px; height: 28px; border-radius: 9999px;
+      display: flex; align-items: center; justify-content: center;
+      color: color-mix(in oklab, var(--muted-foreground) 60%, transparent);
+    }
+    .trash svg { width: 14px; height: 14px; }
+  </style>
+</head>
+<body>
+  <div class="row">
+    <div class="av">🍕</div>
+    <div class="mid">
+      <div class="title">Pizza con Sara</div>
+      <div class="meta">Venerdì 5 Maggio · Cibo &amp; Delivery</div>
+    </div>
+    <div class="amt neg">−€24,50</div>
+    <div class="trash"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></div>
+  </div>
+  <div class="row">
+    <div class="av">💰</div>
+    <div class="mid">
+      <div class="title">Stipendio</div>
+      <div class="meta">Lunedì 1 Maggio</div>
+    </div>
+    <div class="amt pos">+€1.200,00</div>
+    <div class="trash"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></div>
+  </div>
+</body>
+</html>

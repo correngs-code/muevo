@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="_base.css">
+  <style>
+    body {
+      padding: 0; margin: 0;
+      height: 100vh; width: 100vw;
+      position: relative;
+      overflow: hidden;
+      background:
+        radial-gradient(60% 45% at 50% 0%, oklch(0.85 0.14 152 / 0.32), transparent 70%),
+        radial-gradient(40% 30% at 80% 20%, oklch(0.85 0.12 200 / 0.18), transparent 70%),
+        var(--gradient-bg);
+    }
+
+    /* ─── Home screen behind the modal (so transparency reads) ─────────── */
+    .home {
+      position: absolute; inset: 0;
+      padding: 20px 24px;
+      display: flex; flex-direction: column;
+    }
+    .home-head {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 24px;
+    }
+    .home-brand { font-weight: 600; font-size: 18px; letter-spacing: -0.01em; color: var(--foreground); }
+    .home-av {
+      width: 36px; height: 36px; border-radius: 9999px;
+      background: #000; color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 600; font-size: 12px;
+      box-shadow: var(--shadow-card);
+    }
+    .home-eyebrow {
+      text-align: center;
+      font-size: 11px; font-weight: 500;
+      text-transform: uppercase; letter-spacing: 0.16em;
+      color: color-mix(in oklab, var(--muted-foreground) 80%, transparent);
+    }
+    .home-amount {
+      text-align: center;
+      margin-top: 8px;
+      font-size: 42px; font-weight: 500;
+      font-variant-numeric: tabular-nums;
+      font-feature-settings: "tnum","ss01";
+      letter-spacing: -0.03em; line-height: 1;
+      color: var(--foreground);
+    }
+    .home-quick {
+      margin: 24px auto 0; max-width: 340px;
+      padding: 8px;
+      border-radius: 26px;
+      background: rgba(255,255,255,0.95);
+      border: 1px solid color-mix(in oklab, var(--border) 50%, transparent);
+      box-shadow:
+        0 1px 0 oklch(1 0 0 / 0.7) inset,
+        0 10px 30px -14px oklch(0.20 0.015 265 / 0.18);
+      display: flex; align-items: center; gap: 10px;
+    }
+    .qchip {
+      width: 40px; height: 40px; border-radius: 9999px;
+      background: rgba(255,255,255,0.95);
+      border: 1px solid color-mix(in oklab, var(--border) 50%, transparent);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px;
+    }
+    .qtext { flex: 1; color: color-mix(in oklab, var(--muted-foreground) 50%, transparent); font-size: 16px; }
+    .qmic {
+      width: 40px; height: 40px; border-radius: 9999px;
+      background: color-mix(in oklab, var(--foreground) 6%, transparent);
+      display: flex; align-items: center; justify-content: center;
+      color: color-mix(in oklab, var(--foreground) 50%, transparent);
+    }
+
+    /* ─── Scrim + modal ────────────────────────────────────────────────── */
+    .scrim {
+      position: absolute; inset: 0;
+      background: oklch(0.15 0.02 265 / 0.18);   /* much lighter dim */
+      backdrop-filter: blur(4px) saturate(1.05);  /* subtle, home stays recognisable */
+      -webkit-backdrop-filter: blur(4px) saturate(1.05);
+      display: flex; align-items: center; justify-content: center;
+      padding: 24px;
+    }
+    .modal {
+      position: relative;
+      padding: 22px 32px 24px;
+      border-radius: 30px;
+      width: 100%; max-width: 320px;
+      text-align: center;
+      /* Highly transparent white — home shows through */
+      background: oklch(1 0 0 / 0.32);
+      border: 1px solid oklch(1 0 0 / 0.55);
+      backdrop-filter: blur(22px) saturate(1.5);
+      -webkit-backdrop-filter: blur(22px) saturate(1.5);
+      box-shadow:
+        0 1px 0 oklch(1 0 0 / 0.85) inset,
+        0 -1px 0 oklch(0 0 0 / 0.03) inset,
+        0 40px 90px -30px oklch(0 0 0 / 0.30),
+        0 18px 50px -20px oklch(0 0 0 / 0.18);
+    }
+    /* Inner crisp ring for the "double bevel" iOS look */
+    .modal::before {
+      content: "";
+      position: absolute; inset: 1px;
+      border-radius: 29px;
+      pointer-events: none;
+      border: 1px solid oklch(1 0 0 / 0.4);
+      mask-image: linear-gradient(180deg, #000 0%, transparent 60%);
+      -webkit-mask-image: linear-gradient(180deg, #000 0%, transparent 60%);
+    }
+    .icon {
+      width: 70px; height: 70px; border-radius: 9999px;
+      background: rgba(255,255,255,0.92);
+      box-shadow:
+        inset 0 0 0 1px oklch(0 0 0 / 0.04),
+        inset 0 1px 0 oklch(1 0 0 / 0.9),
+        0 10px 28px -10px oklch(0 0 0 / 0.22);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 36px;
+      margin: 0 auto 14px;
+    }
+    .name {
+      font-size: 18px; font-weight: 600;
+      color: oklch(0.18 0 0);
+      margin-bottom: 10px;
+    }
+    .amt {
+      font-size: 32px; font-weight: 700;
+      font-variant-numeric: tabular-nums;
+      letter-spacing: -0.025em;
+      color: oklch(0.18 0 0);
+    }
+    .eyebrow {
+      margin-top: 12px;
+      font-size: 10px; font-weight: 600;
+      text-transform: uppercase; letter-spacing: 0.14em;
+      color: oklch(0.48 0 0);
+    }
+  </style>
+</head>
+<body>
+  <!-- Home screen behind, so the modal's transparency reads -->
+  <div class="home">
+    <div class="home-head">
+      <span class="home-brand">Ognicent</span>
+      <div class="home-av">MR</div>
+    </div>
+    <div class="home-eyebrow">Buongiorno · ti rimangono</div>
+    <div class="home-amount">€ 1.247,80</div>
+    <div class="home-quick">
+      <div class="qchip">🍕</div>
+      <div class="qtext">caffè 1,50</div>
+      <div class="qmic">🎤</div>
+    </div>
+  </div>
+
+  <!-- Scrim + modal -->
+  <div class="scrim">
+    <div class="modal">
+      <div class="icon">🍕</div>
+      <div class="name">Pizza con Sara</div>
+      <div class="amt">−€24,50</div>
+      <div class="eyebrow">Spesa aggiunta</div>
+    </div>
+  </div>
+</body>
+</html>

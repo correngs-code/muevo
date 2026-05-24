@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="_base.css">
+  <style>
+    body { padding: 22px 28px; gap: 14px; align-items: flex-end; }
+    .cell { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+    .box {
+      width: 84px;
+      background: #fff;
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-card);
+    }
+    .b-12 { height: 64px; border-radius: 12px; }
+    .b-14 { height: 64px; border-radius: 14px; }
+    .b-16 { height: 64px; border-radius: 16px; }
+    .b-22 { height: 64px; border-radius: 22px; }
+    .b-28 { height: 64px; border-radius: 28px; }
+    .b-pill { height: 56px; border-radius: 9999px; background: var(--gradient-vivid); border: none; box-shadow: var(--shadow-cta); }
+    .nm { font-size: 11px; font-weight: 600; }
+    .vl { font-family: ui-monospace, Menlo, monospace; font-size: 10px; color: var(--muted-foreground); }
+  </style>
+</head>
+<body>
+  <div class="cell"><div class="box b-12"></div><div class="nm">sm · 12</div><div class="vl">rounded-xl</div></div>
+  <div class="cell"><div class="box b-14"></div><div class="nm">md · 14</div><div class="vl">rounded-lg+</div></div>
+  <div class="cell"><div class="box b-16"></div><div class="nm">lg · 16</div><div class="vl">rounded-2xl</div></div>
+  <div class="cell"><div class="box b-22"></div><div class="nm">xl · 22</div><div class="vl">card</div></div>
+  <div class="cell"><div class="box b-28"></div><div class="nm">2xl · 28</div><div class="vl">rounded-3xl</div></div>
+  <div class="cell"><div class="box b-pill"></div><div class="nm">pill</div><div class="vl">9999px</div></div>
+</body>
+</html>

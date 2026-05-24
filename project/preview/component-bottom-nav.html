@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="_base.css">
+  <style>
+    body { padding: 0; margin: 0; height: 100%; }
+    .stage {
+      position: relative; width: 100%; min-height: 220px;
+      padding: 24px 28px;
+      display: flex; align-items: flex-end; justify-content: center;
+      background:
+        radial-gradient(60% 50% at 30% 0%, oklch(0.85 0.14 152 / 0.35), transparent 70%),
+        radial-gradient(40% 35% at 90% 20%, oklch(0.85 0.12 230 / 0.30), transparent 70%),
+        var(--gradient-bg);
+      overflow: hidden;
+    }
+    /* Decorative shapes behind the glass so the blur reads */
+    .stage::before, .stage::after {
+      content: "";
+      position: absolute;
+      border-radius: 9999px;
+      filter: blur(8px);
+      opacity: 0.65;
+    }
+    .stage::before {
+      width: 90px; height: 90px;
+      left: 16%; top: 38%;
+      background: oklch(0.85 0.13 25);
+    }
+    .stage::after {
+      width: 70px; height: 70px;
+      right: 18%; top: 30%;
+      background: oklch(0.86 0.12 290);
+    }
+    .float-emoji {
+      position: absolute;
+      font-size: 36px;
+      opacity: 0.85;
+      filter: drop-shadow(0 6px 14px rgba(0,0,0,0.08));
+    }
+    .e1 { left: 12%; top: 28%; }
+    .e2 { left: 38%; top: 18%; font-size: 30px; }
+    .e3 { right: 12%; top: 36%; font-size: 32px; }
+    .e4 { left: 58%; top: 50%; font-size: 28px; }
+
+    /* ─────── Bottom nav ─────────────────────────────────────── */
+    .nav {
+      position: relative;
+      width: 360px;
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      padding: 6px;
+      border-radius: 28px;
+      /* iOS-26-style "liquid glass" layered surface:
+         1. A vertical card gradient mixing card colour at the top and a
+            cooler tint at the bottom — gives the glass a directional sheen.
+         2. A radial top-highlight that fakes light hitting the bezel. */
+      background:
+        radial-gradient(120% 80% at 50% -10%, oklch(1 0 0 / 0.55) 0%, oklch(1 0 0 / 0) 60%),
+        linear-gradient(180deg,
+          color-mix(in oklab, var(--card) 65%, transparent) 0%,
+          color-mix(in oklab, var(--card) 42%, transparent) 100%);
+      backdrop-filter: blur(36px) saturate(200%);
+      -webkit-backdrop-filter: blur(36px) saturate(200%);
+      border: 1px solid color-mix(in oklab, oklch(1 0 0) 60%, transparent);
+      box-shadow:
+        /* inner top highlight — the glass "edge light" */
+        inset 0 1px 0 oklch(1 0 0 / 0.85),
+        /* inner bottom shadow — bevels the bottom edge inward */
+        inset 0 -1px 0 oklch(0.20 0.015 265 / 0.06),
+        /* outer lift */
+        0 1px 1px oklch(0.20 0.015 265 / 0.04),
+        0 12px 36px -16px oklch(0.20 0.015 265 / 0.22),
+        /* faint blue ambient from the brand */
+        0 24px 64px -32px oklch(0.55 0.18 258 / 0.18);
+    }
+    /* Subtle inner crisp ring just inside the border for the "double bevel" look */
+    .nav::before {
+      content: "";
+      position: absolute; inset: 1px;
+      border-radius: 27px;
+      pointer-events: none;
+      border: 1px solid oklch(1 0 0 / 0.35);
+      mask-image: linear-gradient(180deg, #000 0%, transparent 60%);
+      -webkit-mask-image: linear-gradient(180deg, #000 0%, transparent 60%);
+    }
+
+    .tab {
+      position: relative;
+      display: flex; flex-direction: column; align-items: center; gap: 2px;
+      padding: 10px 6px 8px;
+      border-radius: 22px;
+      font-size: 11px; font-weight: 500;
+      color: color-mix(in oklab, var(--foreground) 50%, transparent);
+      transition: color .25s cubic-bezier(.22,1,.36,1);
+    }
+    .tab svg { width: 20px; height: 20px; transition: transform .3s cubic-bezier(.22,1,.36,1); }
+
+    .tab.active {
+      color: var(--foreground);
+      font-weight: 600;
+      /* The active pill IS a smaller liquid-glass tablet on top of the nav */
+      background:
+        radial-gradient(120% 100% at 50% 0%, oklch(1 0 0 / 0.85) 0%, oklch(1 0 0 / 0) 60%),
+        linear-gradient(180deg,
+          color-mix(in oklab, var(--card) 95%, transparent),
+          color-mix(in oklab, var(--card) 70%, transparent));
+      box-shadow:
+        inset 0 1px 0 oklch(1 0 0 / 0.95),
+        inset 0 -1px 0 oklch(0.20 0.015 265 / 0.04),
+        0 1px 1px oklch(0.20 0.015 265 / 0.04),
+        0 6px 18px -8px oklch(0.55 0.18 258 / 0.18);
+    }
+    .tab.active svg { transform: scale(1.06); }
+    /* Active pill inner light ring */
+    .tab.active::before {
+      content: "";
+      position: absolute; inset: 1px;
+      border-radius: 21px;
+      pointer-events: none;
+      border: 1px solid oklch(1 0 0 / 0.55);
+      mask-image: linear-gradient(180deg, #000 0%, transparent 70%);
+      -webkit-mask-image: linear-gradient(180deg, #000 0%, transparent 70%);
+    }
+  </style>
+</head>
+<body>
+  <div class="stage">
+    <span class="float-emoji e1">🛒</span>
+    <span class="float-emoji e2">☕</span>
+    <span class="float-emoji e3">🍕</span>
+    <span class="float-emoji e4">🍿</span>
+
+    <div class="nav">
+      <div class="tab active">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5V20a2 2 0 0 1-2 2h-4v-7H9v7H5a2 2 0 0 1-2-2v-9.5Z"/></svg>
+        <span>Home</span>
+      </div>
+      <div class="tab">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 7H5a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2Z"/><path d="M16 14h.01M3 9l6-6h10v4"/></svg>
+        <span>Mese</span>
+      </div>
+      <div class="tab">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>
+        <span>Anno</span>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

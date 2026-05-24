@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="_base.css">
+  <style>
+    body { padding: 22px 24px; }
+    .scale { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; flex: 1; }
+    .cell { display: flex; flex-direction: column; gap: 6px; }
+    .sw { height: 72px; border-radius: 14px; box-shadow: var(--shadow-card); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 13px; }
+    .nm { font-size: 11px; font-weight: 600; color: var(--foreground); }
+    .vl { font-family: ui-monospace, Menlo, monospace; font-size: 10px; color: var(--muted-foreground); line-height: 1.4; }
+  </style>
+</head>
+<body>
+  <div class="scale">
+    <div class="cell">
+      <div class="sw" style="background: oklch(0.68 0.18 152); color: #fff;">+€34</div>
+      <div class="nm">success</div>
+      <div class="vl">oklch(0.68 0.18 152)</div>
+    </div>
+    <div class="cell">
+      <div class="sw" style="background: oklch(0.62 0.22 25); color: #fff;">−€34</div>
+      <div class="nm">destructive</div>
+      <div class="vl">oklch(0.62 0.22 25)</div>
+    </div>
+    <div class="cell">
+      <div class="sw" style="background: oklch(0.78 0.16 75); color: oklch(0.25 0.08 75);">!</div>
+      <div class="nm">warning</div>
+      <div class="vl">oklch(0.78 0.16 75)</div>
+    </div>
+    <div class="cell">
+      <div class="sw" style="background: oklch(0.965 0.008 250); color: var(--muted-foreground); font-weight: 500; font-size: 11px;">Aa</div>
+      <div class="nm">muted</div>
+      <div class="vl">oklch(0.965 0.008 250)</div>
+    </div>
+  </div>
+</body>
+</html>

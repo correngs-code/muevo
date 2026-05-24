@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Ognicent · UI Kit</title>
+  <link rel="stylesheet" href="../../colors_and_type.css">
+  <style>
+    html, body {
+      margin: 0; padding: 0; width: 100%; min-height: 100%;
+      font-family: var(--font-sans);
+      background: #0d1018;
+      color: var(--foreground);
+      -webkit-font-smoothing: antialiased;
+    }
+    body {
+      display: flex; flex-direction: column; align-items: center;
+      padding: 32px 24px 64px;
+      background:
+        radial-gradient(60% 40% at 50% 0%, rgba(59,108,255,0.08) 0%, transparent 60%),
+        #0d1018;
+    }
+    .toolbar {
+      display: flex; align-items: center; gap: 16px;
+      margin-bottom: 28px;
+      padding: 8px 12px 8px 8px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.08);
+      backdrop-filter: blur(16px);
+    }
+    .toolbar .brand {
+      display: flex; align-items: center; gap: 8px;
+      padding-left: 4px;
+    }
+    .toolbar .brand .glyph {
+      width: 32px; height: 32px; border-radius: 10px;
+      background: linear-gradient(135deg, #3b6cff 0%, #5b8bff 100%);
+      display: flex; align-items: center; justify-content: center;
+      color: #fff;
+      box-shadow: 0 10px 30px -10px rgba(59,108,255,0.65), inset 0 1px 0 rgba(255,255,255,0.22);
+    }
+    .toolbar .brand .glyph svg { width: 16px; height: 16px; }
+    .toolbar .brand .word { color: #fff; font-weight: 600; font-size: 14px; letter-spacing: -0.01em; }
+    .toolbar .seg {
+      display: flex; gap: 2px; padding: 2px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.04);
+    }
+    .toolbar .seg button {
+      padding: 6px 14px; border-radius: 999px; border: none;
+      background: transparent; color: rgba(255,255,255,0.55);
+      font-size: 12px; font-weight: 500; cursor: pointer;
+      transition: all .2s ease;
+    }
+    .toolbar .seg button.active {
+      background: rgba(255,255,255,0.95); color: #06070d; font-weight: 600;
+    }
+    .stage {
+      width: 100%; max-width: 440px;
+    }
+    .stage--wide { max-width: none; }
+  </style>
+</head>
+<body>
+  <div class="toolbar">
+    <div class="brand">
+      <div class="glyph">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12V8H6a2 2 0 0 1 0-4h12v4"/><path d="M20 12v4a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6"/><path d="M16 14h.01"/></svg>
+      </div>
+      <span class="word">Ognicent · UI Kit</span>
+    </div>
+    <div class="seg" id="seg">
+      <button data-screen="landing">Landing</button>
+      <button data-screen="home" class="active">Home</button>
+      <button data-screen="mese">Mese</button>
+    </div>
+  </div>
+
+  <div id="root" class="stage"></div>
+
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+  <script src="data.js"></script>
+  <script type="text/babel" src="ios-frame.jsx"></script>
+  <script type="text/babel" src="Icons.jsx"></script>
+  <script type="text/babel" src="Buttons.jsx"></script>
+  <script type="text/babel" src="QuickAdd.jsx"></script>
+  <script type="text/babel" src="BottomNav.jsx"></script>
+  <script type="text/babel" src="ListRow.jsx"></script>
+  <script type="text/babel" src="SuccessModal.jsx"></script>
+  <script type="text/babel" src="Landing.jsx"></script>
+  <script type="text/babel" src="HomeScreen.jsx"></script>
+  <script type="text/babel" src="MeseScreen.jsx"></script>
+
+  <style>
+    @keyframes ogFadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes ogScaleIn { from { opacity: 0; transform: scale(.92); } to { opacity: 1; transform: scale(1); } }
+    @keyframes ogSlideUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+  </style>
+
+  <script type="text/babel">
+    const { useState, useEffect } = React;
+
+    function App() {
+      const [screen, setScreen] = useState("home");
+      const [items, setItems] = useState(window.OG_SAMPLE_EXPENSES.slice());
+      const [success, setSuccess] = useState(null);
+
+      // Toolbar wiring
+      useEffect(() => {
+        const seg = document.getElementById("seg");
+        const handler = (e) => {
+          const btn = e.target.closest("button[data-screen]");
+          if (!btn) return;
+          seg.querySelectorAll("button").forEach(b => b.classList.toggle("active", b === btn));
+          setScreen(btn.dataset.screen);
+        };
+        seg.addEventListener("click", handler);
+        return () => seg.removeEventListener("click", handler);
+      }, []);
+
+      const addItem = (parsed) => {
+        const item = {
+          id: parsed.id ?? crypto.randomUUID(),
+          name: parsed.name,
+          amount: parsed.amount,
+          frequency: "one_time",
+          category: parsed.isIncome ? "Altro" : "Cibo & Delivery",
+          icon: parsed.icon ?? "✨",
+          createdAt: parsed.createdAt ?? Date.now(),
+          kind: parsed.isIncome ? "income" : "expense",
+        };
+        setItems((arr) => [item, ...arr]);
+        setSuccess({ icon: item.icon, name: item.name, amount: item.amount, isIncome: item.kind === "income" });
+      };
+
+      const deleteItem = (id) => setItems((arr) => arr.filter((x) => x.id !== id));
+
+      // Compute remaining for home
+      const remaining = items.reduce((s, x) => s + (x.kind === "income" ? x.amount : -x.amount), 0);
+
+      // Resize the stage container by screen kind (landing = wide, app = phone).
+      useEffect(() => {
+        const root = document.getElementById("root");
+        root.className = screen === "landing" ? "stage stage--wide" : "stage";
+      }, [screen]);
+
+      if (screen === "landing") {
+        return <Landing onLaunch={() => { setScreen("home"); document.querySelector('[data-screen="home"]').click(); }} />;
+      }
+
+      return (
+        <IOSDevice width={400} height={812}>
+          <div style={{ position: "relative", height: "100%", overflowY: "auto", background: "var(--gradient-bg)" }}>
+            {screen === "home" && (
+              <HomeScreen remaining={remaining} onAdd={addItem} onNavMese={() => setScreen("mese")} />
+            )}
+            {screen === "mese" && (
+              <MeseScreen items={items} onDelete={deleteItem} />
+            )}
+            {success && <SuccessModal data={success} onClose={() => setSuccess(null)} />}
+            <div style={{
+              position: "absolute", bottom: 0, left: 0, right: 0, padding: "0 4px env(safe-area-inset-bottom) 4px",
+              pointerEvents: "none",
+            }}>
+              <div style={{ pointerEvents: "auto" }}>
+                <BottomNav
+                  active={screen}
+                  onChange={(id) => {
+                    setScreen(id);
+                    const btn = document.querySelector(`[data-screen="${id}"]`);
+                    if (btn) {
+                      document.querySelectorAll('#seg button').forEach(b => b.classList.toggle('active', b === btn));
+                    }
+                  }}
+                />
+              </div>
+            </div>
+          </div>
+        </IOSDevice>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+  </script>
+</body>
+</html>

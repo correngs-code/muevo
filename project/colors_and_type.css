@@ -1,0 +1,254 @@
+/* ==========================================================================
+   Ognicent — Design Tokens
+   Personal expense tracker (Italian-market, mobile-first PWA).
+   Two surface modes that COEXIST in the product:
+     • Light app surface (default :root)
+     • Dark cinematic landing/marketing (.landing-root)
+   All colors authored in OKLCH (source) with hex equivalents for the
+   landing/marketing surface — match what's used in src/components/Landing.tsx.
+   ========================================================================== */
+
+/* ------- Web font ---------------------------------------------------------
+   The product uses Inter exclusively (400 / 500 / 600 / 700 / 800).
+   Preload via Google Fonts; ttf fallback in /fonts is provided if you need
+   to ship the font offline. */
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap");
+
+:root {
+  /* ===== Type =========================================================== */
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "SF Pro Display", sans-serif;
+  --font-mono: ui-monospace, "SF Mono", Menlo, monospace;
+
+  /* tabular-num + ss01 are used everywhere we render money. */
+  --font-feature-numeric: "tnum", "ss01";
+  --letter-spacing-tight: -0.025em;
+  --letter-spacing-display: -0.03em;
+  --letter-spacing-eyebrow: 0.16em;   /* small caps eyebrows */
+  --letter-spacing-eyebrow-loose: 0.20em;
+
+  /* Type scale (mobile-first; clamp() variants used for hero copy) */
+  --type-eyebrow: 11px;     /* uppercase tracking-wider */
+  --type-micro:   10px;     /* legend, frequency, footnote */
+  --type-meta:    12px;     /* helpers, captions, badges */
+  --type-body:    13.5px;   /* default body in cards */
+  --type-base:    15px;     /* list item title */
+  --type-input:   17px;     /* quick-add input + tap targets */
+  --type-h3:      17px;     /* card title */
+  --type-h2:      clamp(1.75rem, 5vw, 2.5rem);     /* section heads */
+  --type-h1:      clamp(2.25rem, 7.5vw, 4.25rem);  /* hero */
+  --type-amount-sm: 15px;
+  --type-amount-md: 28px;   /* "ti rimangono" */
+  --type-amount-lg: 40px;   /* month saldo + success modal */
+
+  /* ===== Color — base / light app surface =============================== */
+  --background:        oklch(0.975 0.003 250);   /* off-white, faint cool tint */
+  --foreground:        oklch(0.20  0.015 265);   /* near-black ink */
+  --card:              oklch(1 0 0);             /* pure white */
+  --card-foreground:   oklch(0.20  0.015 265);
+  --popover:           oklch(1 0 0);
+  --muted:             oklch(0.965 0.008 250);
+  --muted-foreground:  oklch(0.52  0.025 260);
+  --secondary:         oklch(0.96  0.008 250);
+  --secondary-foreground: oklch(0.22 0.03 265);
+  --accent:            oklch(0.94  0.04 250);
+  --accent-foreground: oklch(0.30  0.10 260);
+  --border:            oklch(0.92  0.01 250);
+  --input:             oklch(0.92  0.01 250);
+  --ring:              oklch(0.58  0.20 255);
+
+  /* ===== Color — brand / primary ======================================== */
+  /* The brand blue lives between violet & azure. Hex equivalents shown
+     because the dark marketing surface uses them directly. */
+  --primary:             oklch(0.58 0.18 255);   /* ≈ #3b6cff */
+  --primary-foreground:  oklch(0.99 0 0);
+  --primary-glow:        oklch(0.72 0.20 245);   /* ≈ #7aa2ff */
+
+  /* Vivid duo used for hero pills, CTAs, hero amount */
+  --vivid-violet:        oklch(0.65 0.20 250);
+  --vivid-sky:           oklch(0.72 0.18 230);
+
+  /* Hex aliases — these are the literal values used in landing/marketing */
+  --brand-blue:        #3b6cff;
+  --brand-blue-soft:   #5b8bff;
+  --brand-blue-pale:   #7aa2ff;
+  --brand-ink:         #05070d;     /* deepest navy */
+  --brand-ink-2:       #0b0f1a;
+  --brand-ink-3:       #10162a;
+
+  /* ===== Color — semantic / state ====================================== */
+  --success:             oklch(0.68 0.18 152);   /* income green */
+  --success-foreground:  oklch(0.99 0 0);
+  --success-dark:        oklch(0.42 0.16 152);   /* income text on light */
+  --warning:             oklch(0.78 0.16 75);
+  --destructive:         oklch(0.62 0.22 25);    /* red, used for negative saldo */
+  --destructive-foreground: oklch(0.99 0 0);
+
+  /* ===== Charts =========================================================
+     Categorical palette — eight pastel hues evenly spaced around the wheel.
+     Authored deliberately light and low-chroma so multi-slice charts read
+     as a calm "watercolor" set rather than a saturated wheel. */
+  --pie-1: oklch(0.86 0.08 25);    /* coral      */
+  --pie-2: oklch(0.88 0.08 60);    /* peach      */
+  --pie-3: oklch(0.92 0.09 95);    /* butter     */
+  --pie-4: oklch(0.88 0.07 145);   /* sage       */
+  --pie-5: oklch(0.87 0.07 190);   /* mint       */
+  --pie-6: oklch(0.88 0.07 230);   /* sky        */
+  --pie-7: oklch(0.85 0.08 290);   /* lavender   */
+  --pie-8: oklch(0.87 0.08 340);   /* rose       */
+
+  /* ===== Gradients ====================================================== */
+  --gradient-bg:       linear-gradient(180deg, oklch(0.98 0.004 250) 0%, oklch(0.965 0.005 250) 100%);
+  --gradient-primary:  linear-gradient(135deg, oklch(0.55 0.18 255), oklch(0.65 0.15 245));
+  --gradient-vivid:    linear-gradient(135deg, oklch(0.58 0.18 255), oklch(0.66 0.15 245));
+  --gradient-success:  linear-gradient(135deg, oklch(0.68 0.18 152), oklch(0.74 0.18 175));
+  --gradient-sky:      linear-gradient(135deg, oklch(0.78 0.13 230), oklch(0.85 0.10 220));
+
+  /* Marketing-specific gradients (dark surface) */
+  --gradient-cta-hex:        linear-gradient(135deg, #3b6cff 0%, #5b8bff 100%);
+  --gradient-hero-headline:  linear-gradient(135deg, #ffffff 0%, #7aa2ff 60%, #3b6cff 100%);
+  --gradient-cta-hex-white:  linear-gradient(135deg, #ffffff 0%, #7aa2ff 100%);
+
+  /* ===== Radius ========================================================= */
+  --radius:      1rem;                      /* base unit */
+  --radius-sm:   calc(var(--radius) - 4px); /* 12 */
+  --radius-md:   calc(var(--radius) - 2px); /* 14 */
+  --radius-lg:   var(--radius);             /* 16 */
+  --radius-xl:   calc(var(--radius) + 4px); /* 20 */
+  --radius-2xl:  calc(var(--radius) + 8px); /* 24 */
+  --radius-3xl:  calc(var(--radius) + 12px);/* 28 — bottom nav, dialogs */
+  --radius-4xl:  calc(var(--radius) + 16px);/* 32 — hero cards */
+  --radius-pill: 9999px;                    /* CTAs, login pill */
+
+  /* ===== Shadow ========================================================= */
+  --shadow-card:     0 1px 2px oklch(0.20 0.015 265 / 0.03),
+                     0 4px 16px -4px oklch(0.20 0.015 265 / 0.06);
+  --shadow-elevated: 0 1px 3px oklch(0.20 0.015 265 / 0.04),
+                     0 12px 32px -8px oklch(0.20 0.015 265 / 0.10);
+  --shadow-glow:     0 0 0 4px oklch(0.58 0.18 255 / 0.08),
+                     0 16px 36px -10px oklch(0.58 0.18 255 / 0.28);
+  --shadow-input:    0 1px 0 oklch(1 0 0 / 0.7) inset,
+                     0 1px 2px oklch(0.20 0.015 265 / 0.04),
+                     0 10px 30px -14px oklch(0.20 0.015 265 / 0.18),
+                     0 24px 60px -30px oklch(0.55 0.18 258 / 0.20);
+  --shadow-cta:      0 10px 30px -10px rgba(59,108,255,0.65),
+                     inset 0 1px 0 rgba(255,255,255,0.22);
+
+  /* ===== Spacing ======================================================== */
+  /* The product uses Tailwind defaults but these are the recurring rhythm
+     values to copy. */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;     /* px-5 on every screen */
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-14: 56px;
+
+  --container-mobile: 36rem;   /* max-w-xl mx-auto wraps all main screens */
+  --safe-top: env(safe-area-inset-top);
+  --safe-bottom: env(safe-area-inset-bottom);
+
+  /* ===== Motion ========================================================= */
+  --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);    /* primary easing */
+  --ease-in-soft:  ease-in;
+  --dur-fast:   150ms;     /* hover/press feedback */
+  --dur-base:   220ms;     /* dialog / leave */
+  --dur-slide:  280ms;     /* slide-up-fade on cards */
+  --dur-reveal: 700ms;     /* reveal on scroll */
+}
+
+/* ==========================================================================
+   Dark cinematic surface — applied to the landing page and to any marketing
+   shot that wants the "premium navy + electric blue glow" look. Scope by
+   adding the .landing-root class to a container; tokens reflow.
+   ========================================================================== */
+.landing-root {
+  --background:        #05070d;
+  --foreground:        rgba(255,255,255,0.96);
+  --card:              #0b0f1a;
+  --card-elevated:     #10162a;
+  --muted-foreground:  rgba(255,255,255,0.62);
+  --muted-foreground-dim: rgba(255,255,255,0.42);
+  --border:            rgba(255,255,255,0.08);
+  --border-strong:     rgba(255,255,255,0.14);
+  --primary:           #3b6cff;
+  --primary-soft:      #5b8bff;
+  --primary-pale:      #7aa2ff;
+  --glow:              rgba(59,108,255,0.55);
+}
+
+/* ==========================================================================
+   Semantic typography rules — bind tokens to plain HTML elements so any
+   prototype that doesn't load Tailwind still renders on-brand.
+   ========================================================================== */
+html {
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+body {
+  font-family: var(--font-sans);
+  background: var(--gradient-bg);
+  background-attachment: fixed;
+  color: var(--foreground);
+}
+
+h1 {
+  font-size: var(--type-h1);
+  font-weight: 700;
+  letter-spacing: var(--letter-spacing-display);
+  line-height: 1.04;
+}
+h2 {
+  font-size: var(--type-h2);
+  font-weight: 700;
+  letter-spacing: var(--letter-spacing-tight);
+  line-height: 1.1;
+}
+h3 {
+  font-size: var(--type-h3);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+p, li { font-size: var(--type-body); line-height: 1.55; }
+small { font-size: var(--type-meta); color: var(--muted-foreground); }
+
+/* Eyebrow / section label — extremely common pattern */
+.eyebrow {
+  font-size: var(--type-eyebrow);
+  font-weight: 600;
+  letter-spacing: var(--letter-spacing-eyebrow);
+  text-transform: uppercase;
+  color: color-mix(in oklab, var(--muted-foreground) 80%, transparent);
+}
+.eyebrow--brand { color: var(--brand-blue-pale); letter-spacing: var(--letter-spacing-eyebrow-loose); }
+
+/* Money — every numeric amount gets tabular nums + tracking-tight. */
+.amount {
+  font-feature-settings: var(--font-feature-numeric);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+  font-weight: 600;
+}
+
+/* Gradient text — hero headlines on dark + amount accent on light */
+.text-gradient {
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.text-gradient-hero {
+  background: var(--gradient-hero-headline);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.text-gradient-success {
+  background: var(--gradient-success);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}

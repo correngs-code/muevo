@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="_base.css">
+  <style>
+    body { padding: 22px 24px; }
+    .scale { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; flex: 1; }
+    .cell { display: flex; flex-direction: column; gap: 6px; }
+    .sw { height: 72px; border-radius: 14px; box-shadow: var(--shadow-card); }
+    .ring { box-shadow: inset 0 0 0 1px var(--border); }
+    .nm { font-size: 11px; font-weight: 600; color: var(--foreground); }
+    .vl { font-family: ui-monospace, Menlo, monospace; font-size: 10px; color: var(--muted-foreground); line-height: 1.4; }
+  </style>
+</head>
+<body>
+  <div class="scale">
+    <div class="cell">
+      <div class="sw ring" style="background: oklch(0.975 0.003 250);"></div>
+      <div class="nm">background</div>
+      <div class="vl">oklch(0.975 0.003 250)</div>
+    </div>
+    <div class="cell">
+      <div class="sw ring" style="background: #ffffff;"></div>
+      <div class="nm">card</div>
+      <div class="vl">oklch(1 0 0)</div>
+    </div>
+    <div class="cell">
+      <div class="sw" style="background: oklch(0.96 0.008 250);"></div>
+      <div class="nm">secondary</div>
+      <div class="vl">oklch(0.96 0.008 250)</div>
+    </div>
+    <div class="cell">
+      <div class="sw" style="background: oklch(0.92 0.01 250);"></div>
+      <div class="nm">border / input</div>
+      <div class="vl">oklch(0.92 0.01 250)</div>
+    </div>
+    <div class="cell">
+      <div class="sw" style="background: oklch(0.20 0.015 265);"></div>
+      <div class="nm" style="color: var(--foreground);">foreground</div>
+      <div class="vl">oklch(0.20 0.015 265)</div>
+    </div>
+  </div>
+</body>
+</html>

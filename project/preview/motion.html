@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="_base.css">
+  <style>
+    body { padding: 22px 28px; gap: 16px; flex-direction: column; }
+    .row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; align-items: center; }
+    .cell {
+      display: flex; flex-direction: column; gap: 8px;
+      padding: 14px 16px; border-radius: 16px;
+      background: #fff; border: 1px solid var(--border); box-shadow: var(--shadow-card);
+    }
+    .nm { font-size: 12px; font-weight: 600; }
+    .vl { font-family: ui-monospace, Menlo, monospace; font-size: 10px; color: var(--muted-foreground); line-height: 1.45; }
+    .curve { height: 26px; }
+  </style>
+</head>
+<body>
+  <div class="row">
+    <div class="cell">
+      <div class="nm">Primary easing</div>
+      <svg class="curve" viewBox="0 0 100 30" preserveAspectRatio="none"><path d="M0 30 C 22 30 36 0 100 0" stroke="#3b6cff" stroke-width="2.2" fill="none"/></svg>
+      <div class="vl">cubic-bezier(.22,1,.36,1)</div>
+    </div>
+    <div class="cell">
+      <div class="nm">Press / hover</div>
+      <div class="vl">150ms · brightness 1.06, translateY −1px</div>
+      <div class="vl">Active: scale(0.96–0.99)</div>
+    </div>
+    <div class="cell">
+      <div class="nm">Card enter / leave</div>
+      <div class="vl">slide-up-fade · 280ms</div>
+      <div class="vl">scale-fade-out · 180ms</div>
+    </div>
+    <div class="cell">
+      <div class="nm">Reveal on scroll</div>
+      <div class="vl">opacity 0→1, ty 14→0</div>
+      <div class="vl">700ms · landing only</div>
+    </div>
+    <div class="cell">
+      <div class="nm">Pulse-glow</div>
+      <div class="vl">2.4s loop · CTA invitation</div>
+      <div class="vl">Halo expands from 0 → 14px</div>
+    </div>
+    <div class="cell">
+      <div class="nm">Jiggle (edit mode)</div>
+      <div class="vl">±1.4° rotate · 320ms loop</div>
+      <div class="vl">iOS-style category tiles</div>
+    </div>
+  </div>
+</body>
+</html>

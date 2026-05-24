@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="_base.css">
+  <style>
+    body { padding: 22px 26px; gap: 22px; align-items: center; }
+    .pie { width: 130px; height: 130px; flex-shrink: 0; filter: drop-shadow(0 8px 20px rgba(0,0,0,0.05)); }
+    .legend { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px 18px; flex: 1; }
+    .item { display: flex; align-items: center; gap: 10px; }
+    .dot {
+      width: 16px; height: 16px; border-radius: 6px; flex-shrink: 0;
+      box-shadow: inset 0 0 0 1px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.03);
+    }
+    .name { font-size: 12px; font-weight: 500; color: var(--foreground); }
+    .val { margin-left: auto; font-family: ui-monospace, Menlo, monospace; font-size: 10px; color: var(--muted-foreground); }
+  </style>
+</head>
+<body>
+  <svg class="pie" viewBox="0 0 100 100" aria-hidden="true">
+    <circle cx="50" cy="50" r="48" fill="oklch(0.86 0.08 25)"/>
+    <path d="M50 50 L50 2 A48 48 0 0 1 83.94 16.06 Z" fill="oklch(0.88 0.08 60)"/>
+    <path d="M50 50 L83.94 16.06 A48 48 0 0 1 98 50 Z" fill="oklch(0.92 0.09 95)"/>
+    <path d="M50 50 L98 50 A48 48 0 0 1 83.94 83.94 Z" fill="oklch(0.88 0.07 145)"/>
+    <path d="M50 50 L83.94 83.94 A48 48 0 0 1 50 98 Z" fill="oklch(0.87 0.07 190)"/>
+    <path d="M50 50 L50 98 A48 48 0 0 1 16.06 83.94 Z" fill="oklch(0.88 0.07 230)"/>
+    <path d="M50 50 L16.06 83.94 A48 48 0 0 1 2 50 Z" fill="oklch(0.85 0.08 290)"/>
+    <path d="M50 50 L2 50 A48 48 0 0 1 16.06 16.06 Z" fill="oklch(0.87 0.08 340)"/>
+    <circle cx="50" cy="50" r="14" fill="#fff"/>
+  </svg>
+  <div class="legend">
+    <div class="item"><span class="dot" style="background: oklch(0.86 0.08 25);"></span><span class="name">Coral</span><span class="val">--pie-1</span></div>
+    <div class="item"><span class="dot" style="background: oklch(0.88 0.08 60);"></span><span class="name">Peach</span><span class="val">--pie-2</span></div>
+    <div class="item"><span class="dot" style="background: oklch(0.92 0.09 95);"></span><span class="name">Butter</span><span class="val">--pie-3</span></div>
+    <div class="item"><span class="dot" style="background: oklch(0.88 0.07 145);"></span><span class="name">Sage</span><span class="val">--pie-4</span></div>
+    <div class="item"><span class="dot" style="background: oklch(0.87 0.07 190);"></span><span class="name">Mint</span><span class="val">--pie-5</span></div>
+    <div class="item"><span class="dot" style="background: oklch(0.88 0.07 230);"></span><span class="name">Sky</span><span class="val">--pie-6</span></div>
+    <div class="item"><span class="dot" style="background: oklch(0.85 0.08 290);"></span><span class="name">Lavender</span><span class="val">--pie-7</span></div>
+    <div class="item"><span class="dot" style="background: oklch(0.87 0.08 340);"></span><span class="name">Rose</span><span class="val">--pie-8</span></div>
+  </div>
+</body>
+</html>
