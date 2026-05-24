@@ -1,5 +1,5 @@
 import QuickAdd from './QuickAdd'
-import { IconLogOut } from './Icons'
+import { IconLogOut, IconArrowUp } from './Icons'
 import { formatEUR } from '../lib/expenses'
 
 function MuevoMark() {
@@ -43,20 +43,30 @@ interface QuickAddItem {
 }
 
 interface HomeScreenProps {
+  mode: 'local' | 'cloud'
   remaining: number
   totalIncome: number
   totalExpenses: number
   userInitials: string
+  userFullName: string
+  userAvatarUrl?: string
+  canSignIn: boolean
   onAdd: (item: QuickAddItem) => void
+  onSignIn: () => void
   onSignOut: () => void
 }
 
 export default function HomeScreen({
+  mode,
   remaining,
   totalIncome,
   totalExpenses,
   userInitials,
+  userFullName,
+  userAvatarUrl,
+  canSignIn,
   onAdd,
+  onSignIn,
   onSignOut,
 }: HomeScreenProps) {
   const isPositive = remaining >= 0
@@ -94,26 +104,70 @@ export default function HomeScreen({
         padding: '16px 20px',
       }}>
         <MuevoMark />
-        <button
-          type="button"
-          onClick={onSignOut}
-          title="Esci"
-          style={{
-            width: 36, height: 36,
-            background: 'var(--foreground)',
-            color: 'var(--background)',
-            border: 'none', borderRadius: '50%',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            cursor: 'pointer',
-            fontSize: 13, fontWeight: 700, letterSpacing: '-0.02em',
-            fontFamily: 'var(--font-sans)',
-            transition: 'opacity 150ms',
-          }}
-          onMouseEnter={(e) => { e.currentTarget.style.opacity = '0.75' }}
-          onMouseLeave={(e) => { e.currentTarget.style.opacity = '1' }}
-        >
-          {userInitials}
-        </button>
+        {mode === 'cloud' ? (
+          <button
+            type="button"
+            onClick={onSignOut}
+            title={userFullName ? `${userFullName} · clicca per uscire` : 'Esci'}
+            style={{
+              width: 36, height: 36,
+              background: userAvatarUrl ? `center / cover no-repeat url(${userAvatarUrl})` : 'var(--foreground)',
+              color: 'var(--background)',
+              border: userAvatarUrl ? '1px solid var(--border)' : 'none',
+              borderRadius: '50%',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              cursor: 'pointer',
+              fontSize: 13, fontWeight: 700, letterSpacing: '-0.02em',
+              fontFamily: 'var(--font-sans)',
+              transition: 'opacity 150ms',
+              overflow: 'hidden',
+            }}
+            onMouseEnter={(e) => { e.currentTarget.style.opacity = '0.75' }}
+            onMouseLeave={(e) => { e.currentTarget.style.opacity = '1' }}
+          >
+            {!userAvatarUrl && userInitials}
+          </button>
+        ) : canSignIn ? (
+          <button
+            type="button"
+            onClick={onSignIn}
+            title="Accedi con Google per sincronizzare"
+            style={{
+              height: 36, padding: '0 12px',
+              background: 'linear-gradient(135deg, oklch(0.62 0.22 260), oklch(0.68 0.18 255))',
+              color: '#fff', border: 'none', borderRadius: 9999,
+              display: 'inline-flex', alignItems: 'center', gap: 6,
+              cursor: 'pointer',
+              fontSize: 12, fontWeight: 700, letterSpacing: '-0.01em',
+              fontFamily: 'var(--font-sans)',
+              boxShadow: '0 4px 12px -4px oklch(0.62 0.22 260 / 0.45)',
+              transition: 'transform 150ms, opacity 150ms',
+            }}
+            onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-1px)' }}
+            onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateY(0)' }}
+          >
+            <IconArrowUp size={14} />
+            Accedi
+          </button>
+        ) : (
+          <button
+            type="button"
+            onClick={onSignOut}
+            title="Esci"
+            style={{
+              width: 36, height: 36,
+              background: 'var(--muted)',
+              color: 'var(--muted-foreground)',
+              border: '1px solid var(--border)', borderRadius: '50%',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              cursor: 'pointer',
+              fontSize: 16,
+              fontFamily: 'var(--font-sans)',
+            }}
+          >
+            👤
+          </button>
+        )}
       </header>
 
       {/* Balance section */}
@@ -235,7 +289,7 @@ export default function HomeScreen({
           onMouseLeave={(e) => { e.currentTarget.style.opacity = '0.6' }}
         >
           <IconLogOut size={13} />
-          Esci dall'account
+          {mode === 'cloud' ? "Esci dall'account" : 'Torna alla landing'}
         </button>
       </div>
     </div>

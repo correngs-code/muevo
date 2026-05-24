@@ -19,8 +19,20 @@ export type Transaction = {
 export async function signInWithGoogle() {
   return supabase.auth.signInWithOAuth({
     provider: 'google',
-    options: { redirectTo: window.location.origin },
+    options: { redirectTo: window.location.origin + import.meta.env.BASE_URL },
   })
+}
+
+export async function addTransactionsBulk(
+  txs: Array<Omit<Transaction, 'id' | 'created_at'> & { created_at?: string }>
+): Promise<Transaction[]> {
+  if (txs.length === 0) return []
+  const { data, error } = await supabase
+    .from('transactions')
+    .insert(txs)
+    .select()
+  if (error) throw error
+  return data ?? []
 }
 
 export async function signOut() {

@@ -6,6 +6,7 @@ import MeseScreen from './components/MeseScreen'
 import AnnoScreen from './components/AnnoScreen'
 import BottomNav from './components/BottomNav'
 import SuccessModal from './components/SuccessModal'
+import MigrationModal from './components/MigrationModal'
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
@@ -21,33 +22,48 @@ export type Transaction = {
 }
 
 type Screen = 'home' | 'mese' | 'anno'
+type Mode = 'loading' | 'landing' | 'local' | 'cloud'
 type SuccessData = { icon: string; name: string; amount: number; isIncome: boolean }
 type AddPayload = { name: string; amount: number; isIncome: boolean; icon: string }
+type User = { id: string; fullName: string; initials: string; avatarUrl?: string }
 
-// ── Demo mode (localStorage) ─────────────────────────────────────────────────
+const HAS_ENV = !!(import.meta.env.VITE_SUPABASE_URL && import.meta.env.VITE_SUPABASE_ANON_KEY)
 
-const IS_DEMO = !import.meta.env.VITE_SUPABASE_URL
+// ── localStorage helpers ─────────────────────────────────────────────────────
 
-function loadDemo(): Transaction[] {
+const LOCAL_KEY = 'muevo_local_txs'
+const LEGACY_KEY = 'muevo_demo_txs'
+
+function loadLocal(): Transaction[] {
   try {
-    const stored = localStorage.getItem('muevo_demo_txs')
+    const stored = localStorage.getItem(LOCAL_KEY) ?? localStorage.getItem(LEGACY_KEY)
     return stored ? (JSON.parse(stored) as Transaction[]) : []
   } catch {
     return []
   }
 }
 
-function saveDemo(txs: Transaction[]) {
-  localStorage.setItem('muevo_demo_txs', JSON.stringify(txs))
+function saveLocal(txs: Transaction[]) {
+  localStorage.setItem(LOCAL_KEY, JSON.stringify(txs))
+  localStorage.removeItem(LEGACY_KEY)
 }
 
-// ── Supabase (lazy import so demo builds without .env) ───────────────────────
+function clearLocal() {
+  localStorage.removeItem(LOCAL_KEY)
+  localStorage.removeItem(LEGACY_KEY)
+}
+
+// ── Supabase (lazy import) ───────────────────────────────────────────────────
 
 async function getSupabaseModule() {
   return import('./lib/supabase')
 }
 
-// ── Helpers ───────────────────────────────────────────────────────────────────
+function initialsFromName(name: string): string {
+  return name.split(' ').filter(Boolean).map((w) => w[0]).join('').slice(0, 2).toUpperCase() || 'U'
+}
+
+// ── Helpers ──────────────────────────────────────────────────────────────────
 
 function currentMonthTxs(txs: Transaction[]): Transaction[] {
   const now = new Date()
@@ -60,105 +76,166 @@ function currentMonthTxs(txs: Transaction[]): Transaction[] {
 // ── App ──────────────────────────────────────────────────────────────────────
 
 export default function App() {
-  const [loggedIn, setLoggedIn]   = useState(IS_DEMO)
-  const [loading, setLoading]     = useState(!IS_DEMO)
-  const [screen, setScreen]       = useState<Screen>('home')
-  // Full-year transactions — MeseScreen/AnnoScreen filter client-side
-  const [transactions, setTransactions] = useState<Transaction[]>(IS_DEMO ? loadDemo() : [])
-  const [success, setSuccess]     = useState<SuccessData | null>(null)
-  const [userInitials, setUserInitials] = useState(IS_DEMO ? 'DM' : 'U')
+  const [mode, setMode]                 = useState<Mode>(HAS_ENV ? 'loading' : 'landing')
+  const [user, setUser]                 = useState<User | null>(null)
+  const [screen, setScreen]             = useState<Screen>('home')
+  const [transactions, setTransactions] = useState<Transaction[]>([])
+  const [success, setSuccess]           = useState<SuccessData | null>(null)
+  const [pendingMigration, setPendingMigration] = useState<Transaction[] | null>(null)
+  const [migrating, setMigrating]       = useState(false)
 
-  // ── Supabase auth ──────────────────────────────────────────────────────────
+  // Boot: restore Supabase session (if any) + subscribe to auth changes
   useEffect(() => {
-    if (IS_DEMO) return
+    if (!HAS_ENV) return
+    let cancelled = false
+    let unsubscribe: (() => void) | undefined
+
     ;(async () => {
       const { supabase, fetchTransactions } = await getSupabaseModule()
       const { data } = await supabase.auth.getSession()
       const u = data.session?.user ?? null
+      if (cancelled) return
+
       if (u) {
-        setLoggedIn(true)
-        const initials = (u.user_metadata?.full_name as string | undefined)
-          ?.split(' ').map((w) => w[0]).join('').slice(0, 2).toUpperCase() ?? 'U'
-        setUserInitials(initials)
+        const fullName = (u.user_metadata?.full_name as string | undefined) ?? (u.email as string) ?? ''
+        const avatarUrl = u.user_metadata?.avatar_url as string | undefined
+        setUser({ id: u.id, fullName, initials: initialsFromName(fullName), avatarUrl })
         const txs = await fetchTransactions(u.id).catch(() => [] as Transaction[])
         setTransactions(txs)
-      }
-      setLoading(false)
 
-      const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_e, session) => {
+        const local = loadLocal()
+        if (local.length > 0) setPendingMigration(local)
+
+        setMode('cloud')
+      } else {
+        setMode('landing')
+      }
+
+      const { data: sub } = supabase.auth.onAuthStateChange(async (_e, session) => {
         const u2 = session?.user ?? null
-        setLoggedIn(!!u2)
         if (u2) {
+          const fullName2 = (u2.user_metadata?.full_name as string | undefined) ?? (u2.email as string) ?? ''
+          const avatarUrl2 = u2.user_metadata?.avatar_url as string | undefined
+          setUser({ id: u2.id, fullName: fullName2, initials: initialsFromName(fullName2), avatarUrl: avatarUrl2 })
           const txs = await fetchTransactions(u2.id).catch(() => [] as Transaction[])
           setTransactions(txs)
+
+          const local = loadLocal()
+          if (local.length > 0) setPendingMigration(local)
+
+          setMode('cloud')
         } else {
+          setUser(null)
           setTransactions([])
+          setMode('landing')
         }
       })
-      return () => subscription.unsubscribe()
+      unsubscribe = () => sub.subscription.unsubscribe()
     })()
+
+    return () => { cancelled = true; unsubscribe?.() }
   }, [])
+
+  // ── Landing actions ────────────────────────────────────────────────────────
+  const handleSignIn = useCallback(async () => {
+    if (!HAS_ENV) return
+    const { signInWithGoogle } = await getSupabaseModule()
+    await signInWithGoogle()
+  }, [])
+
+  const handleContinueLocal = useCallback(() => {
+    setTransactions(loadLocal())
+    setMode('local')
+  }, [])
+
+  // ── Sign out ───────────────────────────────────────────────────────────────
+  const handleSignOut = useCallback(async () => {
+    if (mode === 'cloud') {
+      const { supabase } = await getSupabaseModule()
+      await supabase.auth.signOut()
+      // onAuthStateChange will set mode to 'landing'
+    } else {
+      // Exit local mode back to landing (data stays in localStorage)
+      setMode('landing')
+      setTransactions([])
+    }
+  }, [mode])
 
   // ── Add ───────────────────────────────────────────────────────────────────
   const handleAdd = useCallback(async (parsed: AddPayload) => {
     const icon = parsed.icon || guessIcon(parsed.name, 'Altro')
+    const category = parsed.isIncome ? 'Altro' : 'Cibo & Delivery'
 
-    if (IS_DEMO) {
+    if (mode === 'local') {
       const tx: Transaction = {
         id: crypto.randomUUID(),
-        user_id: 'demo',
+        user_id: 'local',
         name: parsed.name,
         amount: parsed.amount,
         kind: parsed.isIncome ? 'income' : 'expense',
-        category: parsed.isIncome ? 'Altro' : 'Cibo & Delivery',
-        icon,
+        category, icon,
         created_at: new Date().toISOString(),
       }
-      setTransactions((prev) => { const next = [tx, ...prev]; saveDemo(next); return next })
+      setTransactions((prev) => { const next = [tx, ...prev]; saveLocal(next); return next })
       setSuccess({ icon, name: tx.name, amount: tx.amount, isIncome: tx.kind === 'income' })
       return
     }
 
-    const { addTransaction, supabase } = await getSupabaseModule()
-    const { data: { session } } = await supabase.auth.getSession()
-    if (!session) return
-    const tx = await addTransaction({
-      user_id: session.user.id,
-      name: parsed.name,
-      amount: parsed.amount,
-      kind: parsed.isIncome ? 'income' : 'expense',
-      category: parsed.isIncome ? 'Altro' : 'Cibo & Delivery',
-      icon,
-    })
-    setTransactions((prev) => [tx, ...prev])
-    setSuccess({ icon: tx.icon, name: tx.name, amount: tx.amount, isIncome: tx.kind === 'income' })
-  }, [])
+    if (mode === 'cloud' && user) {
+      const { addTransaction } = await getSupabaseModule()
+      const tx = await addTransaction({
+        user_id: user.id,
+        name: parsed.name,
+        amount: parsed.amount,
+        kind: parsed.isIncome ? 'income' : 'expense',
+        category, icon,
+      })
+      setTransactions((prev) => [tx, ...prev])
+      setSuccess({ icon: tx.icon, name: tx.name, amount: tx.amount, isIncome: tx.kind === 'income' })
+    }
+  }, [mode, user])
 
   // ── Delete ────────────────────────────────────────────────────────────────
   const handleDelete = useCallback(async (id: string) => {
-    if (IS_DEMO) {
-      setTransactions((prev) => { const next = prev.filter((t) => t.id !== id); saveDemo(next); return next })
+    if (mode === 'local') {
+      setTransactions((prev) => { const next = prev.filter((t) => t.id !== id); saveLocal(next); return next })
       return
     }
-    const { deleteTransaction } = await getSupabaseModule()
-    await deleteTransaction(id)
-    setTransactions((prev) => prev.filter((t) => t.id !== id))
-  }, [])
+    if (mode === 'cloud') {
+      const { deleteTransaction } = await getSupabaseModule()
+      await deleteTransaction(id)
+      setTransactions((prev) => prev.filter((t) => t.id !== id))
+    }
+  }, [mode])
 
-  // ── Sign out ──────────────────────────────────────────────────────────────
-  const handleSignOut = useCallback(async () => {
-    if (IS_DEMO) return
-    const { supabase } = await getSupabaseModule()
-    await supabase.auth.signOut()
-    setLoggedIn(false)
-    setTransactions([])
-  }, [])
+  // ── Migration: local → cloud ──────────────────────────────────────────────
+  const handleMigrationImport = useCallback(async () => {
+    if (!pendingMigration || !user) return
+    setMigrating(true)
+    try {
+      const { addTransactionsBulk, fetchTransactions } = await getSupabaseModule()
+      const payload = pendingMigration.map((t) => ({
+        user_id: user.id,
+        name: t.name,
+        amount: t.amount,
+        kind: t.kind,
+        category: t.category,
+        icon: t.icon,
+        created_at: t.created_at,
+      }))
+      await addTransactionsBulk(payload).catch(() => null)
+      clearLocal()
+      const txs = await fetchTransactions(user.id).catch(() => [] as Transaction[])
+      setTransactions(txs)
+    } finally {
+      setPendingMigration(null)
+      setMigrating(false)
+    }
+  }, [pendingMigration, user])
 
-  // ── Landing CTA ───────────────────────────────────────────────────────────
-  const handleLaunch = useCallback(async () => {
-    if (IS_DEMO) { setLoggedIn(true); return }
-    const { signInWithGoogle } = await getSupabaseModule()
-    await signInWithGoogle()
+  const handleMigrationDiscard = useCallback(() => {
+    clearLocal()
+    setPendingMigration(null)
   }, [])
 
   // ── Derived ───────────────────────────────────────────────────────────────
@@ -168,18 +245,24 @@ export default function App() {
   const remaining     = totalIncome - totalExpenses
 
   // ── Render ────────────────────────────────────────────────────────────────
-  if (loading) return (
+  if (mode === 'loading') return (
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh' }}>
       <style>{`@keyframes spin { to { transform: rotate(360deg) } }`}</style>
       <div style={{ width: 32, height: 32, border: '2px solid #3b6cff', borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 0.7s linear infinite' }} />
     </div>
   )
 
-  if (!loggedIn) return <Landing onLaunch={handleLaunch} />
+  if (mode === 'landing') return (
+    <Landing onSignIn={handleSignIn} onContinueLocal={handleContinueLocal} />
+  )
+
+  const userInitials = user?.initials ?? ''
+  const userFullName = user?.fullName ?? ''
+  const userAvatarUrl = user?.avatarUrl
 
   return (
     <div style={{ position: 'relative', maxWidth: 576, margin: '0 auto', minHeight: '100dvh', background: 'var(--gradient-bg)' }}>
-      {IS_DEMO && (
+      {mode === 'local' && (
         <div style={{
           position: 'fixed', top: 0, left: '50%', transform: 'translateX(-50%)',
           width: '100%', maxWidth: 576, zIndex: 200,
@@ -188,18 +271,40 @@ export default function App() {
           textAlign: 'center', padding: '6px 16px',
           fontSize: 11, fontWeight: 500, color: '#3b6cff', letterSpacing: '0.04em',
         }}>
-          Modalità demo · i dati sono salvati localmente
+          Senza account · i dati sono salvati su questo dispositivo
+          {HAS_ENV && (
+            <>
+              {' · '}
+              <button
+                type="button"
+                onClick={handleSignIn}
+                style={{
+                  background: 'transparent', border: 'none',
+                  color: '#3b6cff', textDecoration: 'underline',
+                  cursor: 'pointer', padding: 0, fontSize: 11, fontWeight: 700,
+                  fontFamily: 'var(--font-sans)',
+                }}
+              >
+                Accedi per sincronizzare
+              </button>
+            </>
+          )}
         </div>
       )}
 
-      <div style={{ paddingTop: IS_DEMO ? 30 : 0, minHeight: '100dvh' }}>
+      <div style={{ paddingTop: mode === 'local' ? 30 : 0, minHeight: '100dvh' }}>
         {screen === 'home' && (
           <HomeScreen
+            mode={mode}
             remaining={remaining}
             totalIncome={totalIncome}
             totalExpenses={totalExpenses}
             userInitials={userInitials}
+            userFullName={userFullName}
+            userAvatarUrl={userAvatarUrl}
+            canSignIn={HAS_ENV}
             onAdd={handleAdd}
+            onSignIn={handleSignIn}
             onSignOut={handleSignOut}
           />
         )}
@@ -212,6 +317,15 @@ export default function App() {
       </div>
 
       {success && <SuccessModal data={success} onClose={() => setSuccess(null)} />}
+
+      {pendingMigration && (
+        <MigrationModal
+          count={pendingMigration.length}
+          onImport={handleMigrationImport}
+          onDiscard={handleMigrationDiscard}
+          busy={migrating}
+        />
+      )}
 
       <div style={{
         position: 'fixed', bottom: 0,
