@@ -135,29 +135,29 @@ export default function HomeScreen({
           <button
             type="button"
             onClick={onSignIn}
-            title="Accedi con Google per sincronizzare"
+            aria-label="Accedi con Google"
+            title="Accedi con Google per sincronizzare e salvare i dati"
             style={{
-              height: 36, padding: '0 12px',
-              background: 'linear-gradient(135deg, oklch(0.62 0.22 260), oklch(0.68 0.18 255))',
-              color: '#fff', border: 'none', borderRadius: 9999,
+              height: 44, padding: '0 20px',
+              background: '#000',
+              color: '#fff', border: 'none', borderRadius: 12,
               display: 'inline-flex', alignItems: 'center', gap: 6,
               cursor: 'pointer',
-              fontSize: 12, fontWeight: 700, letterSpacing: '-0.01em',
+              fontSize: 15, fontWeight: 700, letterSpacing: '-0.01em',
               fontFamily: 'var(--font-sans)',
-              boxShadow: '0 4px 12px -4px oklch(0.62 0.22 260 / 0.45)',
-              transition: 'transform 150ms, opacity 150ms',
+              boxShadow: '0 4px 12px -4px rgba(0,0,0,0.6)',
+              transition: 'transform 150ms, opacity 150ms, box-shadow 150ms',
             }}
-            onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-1px)' }}
-            onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateY(0)' }}
+            onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 20px -4px rgba(0,0,0,0.8)' }}
+            onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 12px -4px rgba(0,0,0,0.6)' }}
           >
-            <IconArrowUp size={14} />
             Accedi
           </button>
         ) : (
           <button
             type="button"
             onClick={onSignOut}
-            title="Esci"
+            title="Torna alla landing"
             style={{
               width: 36, height: 36,
               background: 'var(--muted)',
