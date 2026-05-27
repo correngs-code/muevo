@@ -131,7 +131,7 @@ export default function HomeScreen({
           >
             {!userAvatarUrl && userInitials}
           </button>
-        ) : canSignIn ? (
+        ) : (
           <button
             type="button"
             onClick={onSignIn}
@@ -152,24 +152,6 @@ export default function HomeScreen({
             onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 12px -4px rgba(0,0,0,0.6)' }}
           >
             Accedi
-          </button>
-        ) : (
-          <button
-            type="button"
-            onClick={onSignOut}
-            title="Torna alla landing"
-            style={{
-              width: 36, height: 36,
-              background: 'var(--muted)',
-              color: 'var(--muted-foreground)',
-              border: '1px solid var(--border)', borderRadius: '50%',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              cursor: 'pointer',
-              fontSize: 16,
-              fontFamily: 'var(--font-sans)',
-            }}
-          >
-            👤
           </button>
         )}
       </header>
